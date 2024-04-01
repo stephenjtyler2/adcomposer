@@ -8,17 +8,102 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// this is the db datasource on vercel - switch to this when ready to deploy there
-//datasource db {
-//  provider = "postgresql"
-//  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-//  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-//}
-
-// this is the db datasource locally.
-
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+enum ImageGeneratorService {
+  Dalle
+  MidJourney
+}
+
+enum ImageOrigin {
+  Generated
+  Uploaded
+}
+
+// And ImageGenerator represents an configured integrated to an instance of a service that can generate images e.g. all the info necessary to access the Dall-E API using specific API account creds
+// Creds is a JSON structure with generator type specific info
+model ImageGenerator {
+  id     Int                @id @default(autoincrement())
+  service   ImageGeneratorService
+  name   String
+  url    String
+  creds  String
+  Image  Image?
+}
+
+model Image {
+  id               Int             @id @default(autoincrement())
+  imageOrigin      ImageOrigin
+  imageGenerator   ImageGenerator? @relation(fields: [imageGeneratorId], references: [id])
+  imageGeneratorId Int?            @unique
+  prompt           String?
+  generationDate   DateTime?
+  generationStatus String?
+  imgUrl           String
+  createdBy User @relation(fields: [createdById], references: [id])
+  createdById     Int
+  tags             Tag[]
+}
+
+model Tag {
+  id     Int     @id @default(autoincrement())
+  name   String
+  images Image[]
+}
+
+// Identities and Users
+// ====================
+
+// Identities are universal in the world.   An identity is managed by an IdentityProvider (IDP) which manages its profile and authentication credentials and provices a means of authenticating the identity 
+// in a way that this app will trust.    IDPs include Google Sign In, Okta, OneLogin, Auth0, Apple Id, Facebook, and various others.   This app can integrate to them or it can provide its own identity management and act as an IDP to itself.
+// The info we need to store about an identity is info imported from the IDP profile (name, email, avatar image etc.), which IDP it came from, and its unique id as assigned by that IDP.
+
+// Users are tenant scoped objects within this app.   They can have permissions attached to them that control what they can do in the app.   All records of what someone does in the app attach to a User record, not an identity.
+// Users do not login, identities do.   But once they've logged in the actor doing stuff in the app is a user, not an identity.
+
+// We maintain a mapping between identities and users so we know what user context to establish when a given identity logs in.    
+// A single identity can map to multiple users across tenants in this app, but it cannot map to more than one user in any given tenant. 
+// Thus, the identity fred@gmail.com can login to tenant 1 and map to the user {t:1, u:34} but if they login in to tenant 2 they could be {t:2, u:43} which is a totally different user as far as the app is concerned
+// even though the creds to login and authentication method were the same in both cases.
+
+model Identity {
+  id             Int     @id @default(autoincrement())
+  idpName        String?
+  idpUrl         String?
+  idpIdentityId  String?
+  name           String?
+  email          String?
+  avatarImageUrl String?
+  users          User[]
+}
+
+model Permission {
+  id       Int     @id @default(autoincrement())
+  resource String
+  create   Boolean
+  read     Boolean
+  update   Boolean
+  delete   Boolean
+  execute  Boolean
+  users User[]
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  tenantId    Int
+  identity    Identity?    @relation(fields: [identityId], references: [id])
+  identityId  Int?
+  permissions Permission[]
+  createdImages Image[]
+}
+
+model Tenant {
+  id    Int    @id @default(autoincrement())
+  name  String
+  users User[]
 }

@@ -7,6 +7,6 @@ import {PageContainer} from '@/lib/client/components/PageContainer';
 export default function Page(props: PageProps) {
   console.log(props);
   return (
-    <PageContainer title ="Design a Static Image Ad"/>
+    <PageContainer title ="Design a Social Ad"/>
   );
 }

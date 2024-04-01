@@ -25,7 +25,7 @@ function NavDrawer() {
                 elements: [
                     { label: 'Static Images', path: '/design/static' },
                     { label: 'Dynamic Web Ads', path: '/design/dynamic' },
-                    { label: 'Social Posts', path: '/design/dynamic' },
+                    { label: 'Social Posts', path: '/design/social' },
                 ]
             },
             {
