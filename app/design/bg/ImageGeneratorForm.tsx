@@ -1,79 +1,113 @@
-import React, {useState} from 'react';
-import { Typography, SelectChangeEvent, Button} from '@mui/material';
+import React, { useState } from 'react';
+import { Typography, Box, SelectChangeEvent, Button } from '@mui/material';
 import Selector from '@/lib/client/components/controlledFormFields/Selector';
 import TextInputBox from '@/lib/client/components/controlledFormFields/TextInputBox';
+import { targetMarkets } from '@/lib/client/config/targetMarkets';
+import { ImageAspectRatio, ImageStyle } from '@backend/apitypes';
 
-const imgTypeOptions = [
-    {optionLabel: "Piece of Abstract Art", optionValue: "abstract"},
-    {optionLabel: "Landscape", optionValue: "landscape"},
-    {optionLabel: "Party", optionValue: "party"},
-    {optionLabel: "Sporting Event", optionValue: "sports"},
-  ]
-  
-  const imgStyleOptions = [
-    {optionLabel: "Cartoon", optionValue: "cartoon"},
-    {optionLabel: "Sketch", optionValue: "sketch"},
-    {optionLabel: "Photo Realistic", optionValue: "photo"},
-  ]
-  
-  // Most common display ad sizes - https://support.google.com/displayvideo/answer/10261241?hl=en
-  const imgSizeOptions = [
-    {w:120, h:600}, {w:160, h:600},{w:250, h:250}, {w:300, h:50}, {w:300, h:100}, {w:300, h:250},
-    {w:300, h:600}, {w:300, h:1050},{w:320, h:50}, {w:320, h:100}, {w:320, h:320}, {w:320, h:480},
-    {w:336, h:280}, {w:360, h:592}, {w:360, h:640}, {w:375, h:667}, {w:468, h:60}, {w:728, h:90},
-    {w:800, h:250}, {w:970, h:90}, {w:970, h:250}
-  ].map((shape) => ({optionLabel: `${shape.w} x ${shape.h}`, optionValue: `${shape.w}x${shape.h}`}));
-  
-  type Props = {
-    onGenerate: (prompt:string)=> void
+const showImageAspectRatio: boolean = process.env.NEXT_PUBLIC_DALL_E_VERSION === "3";
+
+interface IImgStyleOption {
+  optionLabel: string,
+  optionValue: ImageStyle
+}
+
+const imgStyleOptions: IImgStyleOption[] = [
+  { optionLabel: "Cartoon", optionValue: "cartoon" },
+  { optionLabel: "Sketch", optionValue: "sketch" },
+  { optionLabel: "Photo Realistic", optionValue: "photo" },
+]
+
+interface IImgAspectRatioOption {
+  optionLabel: string,
+  optionValue: ImageAspectRatio
+}
+
+const imgAspectRatioOptions: IImgAspectRatioOption[] = [
+  { optionLabel: "Square", optionValue: "square" },
+  { optionLabel: "Portrait", optionValue: "portrait" },
+  { optionLabel: "Landscape", optionValue: "landscape" },
+]
+
+const targetMarketOptions = targetMarkets.map((market) => ({
+  optionLabel: market, optionValue: market.toLowerCase().replace(/ /g, '')
+}));
+
+type Props = {
+  onGenerate: (prompt: string, imageAspectRatio: ImageAspectRatio) => void,
+  generateButtonDisabled: boolean
+}
+
+export default function ImageGeneratorForm({ onGenerate, generateButtonDisabled }: Props) {
+  const [subjectText, setSubjectText] = useState("");
+  const [additionalInfoText, setAdditionalInfoText] = useState("");
+  const [imgStyle, setImgStyle] = useState(imgStyleOptions[0]);
+  const [targetMarket, setTargetMarket] = useState(targetMarketOptions[0]);
+  const [imgAspectRatio, setImgAspectRatio] = useState(imgAspectRatioOptions[0]);
+
+  const makePrompt = () => {
+    let prompt = `An image in a ${imgStyle.optionLabel.toLowerCase()} style appropriate for an audience in ${targetMarket.optionLabel}.`;
+    prompt = prompt + `The main subject of the image should be ${subjectText.toLowerCase()}.`;
+    if (additionalInfoText.length > 0) prompt = prompt + `The image should also feature: ${additionalInfoText}.`;
+    prompt = prompt.replace(/\.\./g, ".");
+    return prompt;
   }
 
-  export default function ImageGeneratorForm({onGenerate}:Props) {
-    const [additionalInfoText, setAdditionalInfoText] = useState("");
-    const [imgSize, setimgSize] = useState(imgSizeOptions[0]);
-    const [imgType, setImgType] = useState(imgTypeOptions[0]);
-    const [imgStyle, setImgStyle] = useState(imgStyleOptions[0]);
-  
-    const makePrompt= () => `
-        An image with dimensions ${imgSize.optionValue} pixels, of a ${imgType.optionLabel.toLowerCase()} in a ${imgStyle.optionLabel.toLowerCase()} style.        
-        The image should also have: ${additionalInfoText}
-        `;
 
-    return(<>
-      <Typography variant='h6'>Image Generation Options</Typography>
-      <Selector 
-        type="dropdown" 
-        value = {imgType.optionValue}
-        label="Image Type" 
-        instanceTag="imgType" 
-        options = {imgTypeOptions}
-        onSelectionChange = {(event:SelectChangeEvent)=>setImgType(imgTypeOptions.find(option=>option.optionValue == event.target.value)||imgTypeOptions[0])}
-      />   
-      <Selector 
-        type="dropdown" 
-        value = {imgStyle.optionValue}
-        label="Image Style" 
-        instanceTag="imgStyle" 
-        options = {imgStyleOptions}
-        onSelectionChange = {(event:SelectChangeEvent)=>setImgStyle(imgStyleOptions.find(option=>option.optionValue == event.target.value)||imgStyleOptions[0])}
-        />
-      <Selector 
-        type="dropdown" 
-        value = {imgSize.optionValue}
-        label="Image Size" 
-        instanceTag="imgSize" 
-        options = {imgSizeOptions}
-        onSelectionChange = {(event:SelectChangeEvent)=>setimgSize(imgSizeOptions.find(option=>option.optionValue == event.target.value)||imgSizeOptions[0])}
-        />
-      <TextInputBox 
-        id="additionalInstructions"
-        label = "Additional Instructions"
-        onChange = {(event: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>)=>setAdditionalInfoText(event.target.value)}
-        rows = {5}
-        maxRows = {10}
-        value = {additionalInfoText}
+  return (<>
+    <Typography variant='h6'><b>Image Generator</b></Typography>
+    <Selector
+      type="dropdown"
+      value={targetMarket.optionValue}
+      label="Target Market"
+      instanceTag="targetMarket"
+      options={targetMarketOptions}
+      onSelectionChange={(event: SelectChangeEvent) => setTargetMarket(targetMarketOptions.find(option => option.optionValue == event.target.value) || targetMarketOptions[0])}
+    />
+    <Selector
+      type="dropdown"
+      value={imgStyle.optionValue}
+      label="Image Style"
+      instanceTag="imgStyle"
+      options={imgStyleOptions}
+      onSelectionChange={(event: SelectChangeEvent) => setImgStyle(imgStyleOptions.find(option => option.optionValue == event.target.value) || imgStyleOptions[0])}
+    />
+    {showImageAspectRatio &&
+      <Selector
+        type="dropdown"
+        value={imgAspectRatio.optionValue}
+        label="Aspect Ratio"
+        instanceTag="imgAspectRatio"
+        options={imgAspectRatioOptions}
+        onSelectionChange={(event: SelectChangeEvent) => setImgAspectRatio(imgAspectRatioOptions.find(option => option.optionValue == event.target.value) || imgAspectRatioOptions[0])}
       />
-      <center><Button variant="contained" onClick = {()=>onGenerate(makePrompt())}>Generate Image</Button></center>
-  
-    </>);
-  }
+    }
+    <TextInputBox
+      id="subject"
+      label="Main subject of the image"
+      onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSubjectText(event.target.value)}
+      placeholder="e.g. A sports stadium"
+      rows={5}
+      value={subjectText}
+    />
+    <TextInputBox
+      id="additionalInstructions"
+      label="Other required elements"
+      onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setAdditionalInfoText(event.target.value)}
+      placeholder="e.g. With a dog in the foreground."
+      rows={4}
+      value={additionalInfoText}
+    />
+    <Box sx={{ my: 2 }}>
+      <center>
+        <Button
+          variant="contained"
+          disabled={generateButtonDisabled}
+          onClick={() => onGenerate(makePrompt(), imgAspectRatio.optionValue)}>
+          Generate Image
+        </Button>
+      </center>
+    </Box>
+
+  </>);
+}

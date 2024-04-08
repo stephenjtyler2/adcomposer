@@ -1,12 +1,19 @@
 import React from 'react';
-import { Divider, Drawer, Box, Typography, List, ListItem, ListSubheader, ListItemText, ListItemButton, ListItemIcon } from '@mui/material';
+import { Divider, Box, Typography, List, ListItem, ListSubheader, ListItemText, ListItemButton, ListItemIcon } from '@mui/material';
 
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import { useTheme } from '@emotion/react';
-import MailIcon from '@mui/icons-material/Mail';
+import WallpaperIcon from '@mui/icons-material/Wallpaper';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import CropOriginalIcon from '@mui/icons-material/CropOriginal';
+import AnimationIcon from '@mui/icons-material/Animation';
+import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import PublishIcon from '@mui/icons-material/Publish';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import InsightsIcon from '@mui/icons-material/Insights';
 import { useRouter } from 'next/navigation'
 
-const drawerWidth = 240;
+const drawerWidth = 300;
 function NavDrawer() {
     const router = useRouter();
     const theme = useTheme();
@@ -16,84 +23,86 @@ function NavDrawer() {
             {
                 sectionTitle: "Visual Elements Design",
                 elements: [
-                    { label: 'Backgrounds', path: '/design/bg' },
-                    { label: 'Objects', path: '/design/obj' },
+                    { label: 'Backgrounds', path: '/design/bg', icon: <WallpaperIcon /> },
+                    { label: 'Objects', path: '/design/obj', icon: <AutoAwesomeIcon /> },
                 ]
             },
             {
                 sectionTitle: "Ad Design",
                 elements: [
-                    { label: 'Static Images', path: '/design/static' },
-                    { label: 'Dynamic Web Ads', path: '/design/dynamic' },
-                    { label: 'Social Posts', path: '/design/social' },
+                    { label: 'Static Images', path: '/design/static', icon: <CropOriginalIcon /> },
+                    { label: 'Dynamic Web Ads', path: '/design/dynamic', icon: <AnimationIcon /> },
+                    { label: 'Social Posts', path: '/design/social', icon: <ConnectWithoutContactIcon /> },
                 ]
             },
             {
                 sectionTitle: "Create Campaigns",
                 elements: [
-                    { label: 'Define', path: '/campaigns/define' },
-                    { label: 'Deploy', path: '/campaigns/deploy' },
+                    { label: 'Define', path: '/campaigns/define', icon: <CampaignIcon /> },
+                    { label: 'Deploy', path: '/campaigns/deploy', icon: <PublishIcon /> },
                 ]
             },
             {
                 sectionTitle: "Monitor Performance",
                 elements: [
-                    { label: 'Analytics', path: '/monitor/analytics' },
-                    { label: 'Calendar', path: '/monitor/calendar' },
+                    { label: 'Analytics', path: '/monitor/analytics', icon: <InsightsIcon /> },
+                    { label: 'Calendar', path: '/monitor/calendar', icon: <CalendarMonthIcon /> },
                 ]
             },
         ];
+    // <Drawer
+    //     variant="permanent"
+    //     sx={{
+    //         width: drawerWidth,
+    //         flexShrink: 0,
+    //         [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+    //     }}
+    // >
 
-    return (
-        <Drawer
-            variant="permanent"
-            sx={{
-                width: drawerWidth,
-                flexShrink: 0,
-                [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-            }}
-        >
 
+    const renderAppTitleBar = () => (
+        <Box display="flex" py={1} justifyContent="center" key="apptitle" sx={{ bgcolor: "motionPoint.main", width:"100%" }}>
+            <Box sx={{ mr: 1, marginTop: "3px" }}>
+                <img width="26" height="26" src="/images/mplogo.png" />
+            </Box>
+            <Typography
+                variant="h6"
+                noWrap
+                component="a"
+                href="/"
+                sx={{
+                    display: { xs: 'none', md: 'flex' },
+                    textDecoration: 'none',
+                    color: "motionPoint.contrastText",
+                }}
+            >
+                AdComposer
+            </Typography>
+        </Box>
+    );
+
+    const renderNavMenu = () => (
+        <Box sx={{ flexGrow:1, borderRight: 2, borderBottom: 2, mb: 1, borderColor: 'motionPoint.borders' }}>
             <Box sx={{ overflow: 'auto' }}>
-                <Box display="flex" py={1} justifyContent="center" key="apptitle" sx = {(theme)=>({bgcolor: theme.palette.primary.main})}>
-                    <Box sx = {{mr:1, marginTop:"3px"}}>
-                        <img width = "26" height="26" src="/images/mplogo.png"/>
-                    </Box>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="/"
-                        sx={(theme) => ({
-                            display: { xs: 'none', md: 'flex' },
-                            textDecoration: 'none',
-                            color: "#eeeeee",
-                        })}
-                    >
-                        AdComposer
-                    </Typography>
-
-                </Box>
-                <Box key="menuItems" 
-                    sx = {(theme)=>({
+                <Box key="menuItems"
+                    sx={(theme) => ({
                         bgcolor: '#ffffff'
                     })}
                 >
-
                     {menuStructure.map((section, sectionIx) => (
                         <React.Fragment key={`section-${sectionIx}`}>
                             {(sectionIx > 0) && <Divider />}
                             <List
-                                sx={{ width: '100%', maxWidth: 240}}
+                                sx={{ width: '100%', maxWidth: 240 }}
                                 component="nav"
                                 aria-labelledby={`list-subheader-${sectionIx}`}
                                 subheader={
-                                    <ListSubheader 
+                                    <ListSubheader
                                         id={`list-subheader-${sectionIx}`}
-                                        component="div" 
-                                        sx = {(theme)=>({color: theme.palette.text.primary})}
-                                        >
-                                            {section.sectionTitle}
+                                        component="div"
+                                        sx={(theme) => ({ color: theme.palette.text.primary })}
+                                    >
+                                        {section.sectionTitle}
                                     </ListSubheader>
                                 }>
 
@@ -103,7 +112,7 @@ function NavDrawer() {
                                     >
                                         <ListItemButton>
                                             <ListItemIcon>
-                                                {itemIndex % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                                {item.icon}
                                             </ListItemIcon>
                                             <ListItemText primary={item.label} onClick={() => router.push(item.path)} />
                                         </ListItemButton>
@@ -115,9 +124,16 @@ function NavDrawer() {
                     ))
                     }
                 </Box>
-
             </Box>
-        </Drawer>
+        </Box>
+    );
+
+    return (
+        <Box sx={{ border:0, display: "flex", flexDirection: "column", width:drawerWidth }}>
+            {renderAppTitleBar()}
+            {renderNavMenu()}
+        </Box>
+
     );
 }
 

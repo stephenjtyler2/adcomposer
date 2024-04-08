@@ -1,28 +1,39 @@
 {
   "name": "adcomposer",
   "version": "0.1.0",
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "dbpush": "dotenv -e .env.development.local -- npx prisma db push"
+    "dbpush": "dotenv -e .env.development.local -- npx prisma db push",
+    "dbreset": "dotenv -e .env.development.local -- npx prisma db push --force-reset && npx prisma db push",
+    "dbinit": "dotenv -e .env.development.local -- npx prisma migrate dev --name init",
+    "dbseed": "dotenv -e .env.development.local -- npx prisma db seed"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.540.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.12",
     "@mui/icons-material": "^5.15.14",
     "@mui/material": "^5.15.14",
-    "@prisma/client": "^5.11.0",
+    "@prisma/client": "^5.12.1",
+    "@types/uuid": "^9.0.8",
     "@vercel/blob": "^0.22.1",
     "@vercel/postgres": "^0.7.2",
+    "aws-sdk": "^2.1592.0",
+    "axios": "^1.6.8",
     "dotenv-cli": "^7.4.1",
     "next": "14.1.4",
     "openai": "^4.31.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-mui-fileuploader": "^0.5.2",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
@@ -32,7 +43,7 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.4",
-    "prisma": "^5.11.0",
+    "prisma": "^5.12.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.3"
   }

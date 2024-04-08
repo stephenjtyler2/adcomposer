@@ -14,45 +14,11 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-enum ImageGeneratorService {
-  Dalle
-  MidJourney
-}
-
-enum ImageOrigin {
-  Generated
-  Uploaded
-}
-
-// And ImageGenerator represents an configured integrated to an instance of a service that can generate images e.g. all the info necessary to access the Dall-E API using specific API account creds
-// Creds is a JSON structure with generator type specific info
-model ImageGenerator {
-  id     Int                @id @default(autoincrement())
-  service   ImageGeneratorService
-  name   String
-  url    String
-  creds  String
-  Image  Image?
-}
-
-model Image {
-  id               Int             @id @default(autoincrement())
-  imageOrigin      ImageOrigin
-  imageGenerator   ImageGenerator? @relation(fields: [imageGeneratorId], references: [id])
-  imageGeneratorId Int?            @unique
-  prompt           String?
-  generationDate   DateTime?
-  generationStatus String?
-  imgUrl           String
-  createdBy User @relation(fields: [createdById], references: [id])
-  createdById     Int
-  tags             Tag[]
-}
-
-model Tag {
-  id     Int     @id @default(autoincrement())
-  name   String
-  images Image[]
+model Tenant {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  users   User[]
+  library Library?
 }
 
 // Identities and Users
@@ -72,13 +38,22 @@ model Tag {
 
 model Identity {
   id             Int     @id @default(autoincrement())
-  idpName        String?
+  idpIdentityId  String  @unique
   idpUrl         String?
-  idpIdentityId  String?
   name           String?
   email          String?
   avatarImageUrl String?
   users          User[]
+}
+
+model User {
+  id            Int          @id @default(autoincrement())
+  tenant        Tenant       @relation(fields: [tenantId], references: [id])
+  tenantId      Int
+  identity      Identity?    @relation(fields: [identityId], references: [id])
+  identityId    Int?
+  permissions   Permission[]
+  createdImages Image[]
 }
 
 model Permission {
@@ -89,21 +64,143 @@ model Permission {
   update   Boolean
   delete   Boolean
   execute  Boolean
-  users User[]
+  users    User[]
 }
 
-model User {
-  id          Int          @id @default(autoincrement())
-  tenant      Tenant       @relation(fields: [tenantId], references: [id])
-  tenantId    Int
-  identity    Identity?    @relation(fields: [identityId], references: [id])
-  identityId  Int?
-  permissions Permission[]
-  createdImages Image[]
+// Creative Asset Management
+// =========================
+
+model Library {
+  id       Int     @id @default(autoincrement())
+  tenant   Tenant  @relation(fields: [tenantId], references: [id])
+  tenantId Int     @unique
+  images   Image[]
+  ads      AdSet[]
 }
 
-model Tenant {
-  id    Int    @id @default(autoincrement())
-  name  String
-  users User[]
+enum ImageOrigin {
+  Generated
+  Uploaded
+}
+
+enum ImageType {
+  Backgrounds
+  Object
+}
+
+// An image object represents an image file in the blobstore.   In the case of generated images, they may or may not have been added to a library.
+// We only keep generated images for 2 days unless they have been added to a library.
+model Image {
+  id                   Int         @id @default(autoincrement())
+  imageType            ImageType   @default(value: Backgrounds)
+  imageOrigin          ImageOrigin
+  prompt               String?
+  createDate           DateTime?
+  createStatus         String?
+  createdBy            User        @relation(fields: [createdById], references: [id])
+  createdById          Int
+  imgUrl               String      // full url includes bucket name and s3 base uri components.  e.g. https://mybucket.s3.amazonaws.com/path1/path2/myfile.bmp
+  path                 String      // just the object name - e.g. path1/path2/myfile.bmp
+  adsUsingAsBackground Ad[]        @relation("BackgroundsInAds")
+  adsUsingAsObject     Ad[]        @relation("ObjectsInAds")
+  tags                 Tag[]
+  Library              Library?    @relation(fields: [libraryId], references: [id])
+  libraryId            Int?
+}
+
+// Tags have a m:m relationship with assets (images for now, later other asset types like widgets) and ads
+model Tag {
+  id     Int     @id @default(autoincrement())
+  name   String
+  images Image[]
+  ads    Ad[]
+}
+
+// Ads and Campaigns
+// =================
+
+enum AdType {
+  StaticImage
+  DynamicWeb
+  Social
+}
+
+model AdSet {
+  id        Int      @id @default(autoincrement())
+  type      AdType
+  name      String
+  ads       Ad[]
+  Library   Library? @relation(fields: [libraryId], references: [id])
+  libraryId Int?
+}
+
+model Ad {
+  id                Int          @id @default(autoincrement())
+  adSet             AdSet        @relation(fields: [adSetId], references: [id])
+  adSetId           Int
+  targetMarket      String
+  languageCode      String
+  background        Image?       @relation("BackgroundsInAds", fields: [backgroundImageId], references: [id])
+  backgroundImageId Int?
+  objects           Image[]      @relation("ObjectsInAds")
+  textAreas         AdTextArea[]
+  ctaButton         AdCTAButton?
+  Tag               Tag?         @relation(fields: [tagId], references: [id])
+  tagId             Int?
+}
+
+enum FontWeight {
+  Standard
+  Bold
+}
+
+enum FontStyle {
+  Standard
+  Italic
+}
+
+enum TextAlign {
+  Left
+  Right
+  Center
+}
+
+enum TextVerticalAlign {
+  Top
+  Bottom
+  Center
+}
+
+model AdTextArea {
+  id                Int               @id @default(autoincrement())
+  ad                Ad                @relation(fields: [adId], references: [id])
+  adId              Int               @unique
+  text              String
+  textAlign         TextAlign
+  textVerticalAlign TextVerticalAlign
+  font              String
+  fontWeight        FontWeight
+  fontStyle         FontStyle
+  posX              Int
+  posY              Int
+  width             Int
+  height            Int
+}
+
+model AdCTAButton {
+  id           Int        @id @default(autoincrement())
+  ad           Ad         @relation(fields: [adId], references: [id])
+  adId         Int        @unique
+  fillColor    String
+  outlineColor String
+  textColor    String
+  text         String
+  font         String
+  fontWeight   FontWeight
+  fontStyle    FontStyle
+  targetUrl    String
+  posX         Int
+  posY         Int
+  width        Int
+  height       Int
 }

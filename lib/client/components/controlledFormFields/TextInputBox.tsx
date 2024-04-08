@@ -5,17 +5,17 @@ type Props = {
     id:string,
     label:string,
     rows: number,
-    maxRows: number,
+    placeholder: string,
     value: string,
     onChange: (event: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>) => void
 }
 
-export default function TextInputBox({id,label, value, rows, maxRows, onChange}:Props) {
+export default function TextInputBox({id,label, placeholder, value, rows, onChange}:Props) {
     return (
         <Box 
             component="form"
             sx = {{
-                '& > :not(style)' : {m:1, width: '25ch'}
+                '& > :not(style)' : {p:1,mt:2}
             }}
             noValidate
             autoComplete="off"
@@ -26,9 +26,9 @@ export default function TextInputBox({id,label, value, rows, maxRows, onChange}:
                 value = {value}
                 onChange={onChange}
                 multiline
-                placeholder="e.g. Add a beachball in the foreground."
+                placeholder={placeholder}
+                fullWidth ={true}
                 rows = {rows}
-                maxRows={maxRows}
             />
         </Box>
 

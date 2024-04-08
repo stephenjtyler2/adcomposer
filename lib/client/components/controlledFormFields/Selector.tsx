@@ -24,7 +24,7 @@ export default function Selector(props: Props) {
     );
 
     const renderDropdown = () => (
-        <div>
+        <div key = {`selector-div-${instanceTag}`}>
             <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                 <InputLabel id={`selector-label-${instanceTag}`}>{label}</InputLabel>
                 <Select
@@ -36,6 +36,7 @@ export default function Selector(props: Props) {
                 >
                     {options.map((option) => (
                         <MenuItem 
+                            key = {`option-${instanceTag}-${option.optionValue}`}
                             value={option.optionValue}
                             selected={option.optionValue == value}
                             >
