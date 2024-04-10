@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { ImageInfo } from '../../apitypes';
+import { ApiImage } from '../../apitypes';
 
 
 const prisma = new PrismaClient();
@@ -10,7 +10,7 @@ export async function getImage( imageId : number ) {
     });
 }
 
-export async function saveImage(img: ImageInfo) : Promise<ImageInfo> {
+export async function saveImage(img: ApiImage) : Promise<ApiImage> {
     const image = await prisma.image.create({ data: img });
     console.log(image);
     return image;

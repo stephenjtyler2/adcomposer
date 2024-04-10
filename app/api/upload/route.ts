@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { storeImageBlob } from '../(utils)/(blobstore)/blobstoreAWS';
 import { saveImage } from '../(utils)/(db)/data';
-import { ImageInfo } from '../apitypes';
+import { ApiImage } from '../apitypes';
 import { addImageToLibrary } from '../(utils)/(db)/data';
 
 const processFile = async (imageFile: File) => {
@@ -17,7 +17,7 @@ const processFile = async (imageFile: File) => {
     const filename = `${id}.${fileExt}`;
     const blobSaveData = await storeImageBlob(filename, image, "Uploaded");
 
-    const imgInfo: ImageInfo = {
+    const imgInfo: ApiImage = {
         id: undefined,
         imageOrigin: "Uploaded",
         createdById: userId,
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
     console.log(imageFile);
 
-    const imgInfo: ImageInfo = await processFile(imageFile);
+    const imgInfo: ApiImage = await processFile(imageFile);
     console.log('done');
 
     return Response.json(imgInfo);

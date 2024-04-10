@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 
 import { Box, Typography, LinearProgress, Button, Stack } from '@mui/material';
-import { ImageInfo } from '@backend/apitypes';
+import { ApiImage } from '@backend/apitypes';
 
 type Props = {
     noImageText: string,
     imageGenerationPending: boolean,
-    imageInfo: ImageInfo | undefined,
+    imageInfo: ApiImage | undefined,
     onSaveToLibrary: () => void,  
     onRemoveFromLibrary: () => void, 
 }
@@ -44,7 +44,7 @@ export default function ImageViewer({ noImageText, imageGenerationPending, image
         </Box>
     );
 
-    const renderImage = (info: ImageInfo) => {
+    const renderImage = (info: ApiImage) => {
         return (
             <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <Box sx={{ border: 1, p: 1, mr: 3 }}>
@@ -59,7 +59,7 @@ export default function ImageViewer({ noImageText, imageGenerationPending, image
         );
     }
 
-    const renderMetadata = (info: ImageInfo) => (
+    const renderMetadata = (info: ApiImage) => (
         <Box>
             <Typography variant="h6">Image Info</Typography>
             <Typography variant="body1">Date Created: {new Date(info.createDate).toLocaleString()} </Typography>
@@ -69,7 +69,7 @@ export default function ImageViewer({ noImageText, imageGenerationPending, image
         </Box>
 
     );
-    const renderActions = (info: ImageInfo) => {
+    const renderActions = (info: ApiImage) => {
         const imageInLibrary = (info && info.libraryId);
         return (
             <Stack direction="row" spacing={1} sx={{ my: 1 }}>

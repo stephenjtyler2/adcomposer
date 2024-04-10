@@ -1,19 +1,18 @@
 'use client'
 
 import React, { useState } from 'react';
-import { PageProps } from '@/.next/types/app/layout';
-import { PageContainer } from '@/lib/client/components/PageContainer';
+import { PageContainer } from '@/components/PageContainer';
 import ImageViewer from './ImageViewer';
 import { Box, Divider, Stack } from '@mui/material';
 import ImageGeneratorForm from './ImageGeneratorForm';
-import { generateImage as ApiGenerateImage } from '@/lib/client/apiClient/image';
-import { ImageAspectRatio, ImageInfo } from '@backend/apitypes';
-import LibrarySearch from '@/lib/client/components/controlledFormFields/LibrarySearch';
+import { generateImage as ApiGenerateImage } from '@/components/apiClient/image';
+import { ImageAspectRatio, ApiImage } from '@backend/apitypes';
+import LibrarySearch from '@/components/controlledFormFields/LibrarySearch';
 import Recents from './Recents';
-import FileUploader from '@/lib/client/components/FileUploader';
+import FileUploader from '@/components/FileUploader';
 
-import { deleteImage } from '@/lib/client/apiClient/image';
-import { addImageToLibrary } from '@/lib/client/apiClient/image';
+import { deleteImage } from '@/components/apiClient/image';
+import { addImageToLibrary } from '@/components/apiClient/image';
 
 const rightWidth = 400;
 const noImageText = 'Search the library, upload or generate a new background.'
@@ -21,9 +20,9 @@ const noImageText = 'Search the library, upload or generate a new background.'
 export default function Page() {
 
   const [imageGenerationPending, setImageGenerationPending] = useState(false);
-  const [imageInfo, setImageInfo] = useState<ImageInfo | undefined>(undefined);
+  const [imageInfo, setImageInfo] = useState<ApiImage | undefined>(undefined);
 
-  const handleFileUploaded = (imageInfo: ImageInfo) => {
+  const handleFileUploaded = (imageInfo: ApiImage) => {
     console.log("file uploaed");
     console.log(imageInfo);
     setImageInfo(imageInfo);
@@ -46,7 +45,7 @@ export default function Page() {
       const response = await addImageToLibrary(imageInfo.id);
       if (response && response.ok) {
         const imgInfo = await response.json();
-        setImageInfo(imgInfo as ImageInfo);
+        setImageInfo(imgInfo as ApiImage);
       }
       else {
         console.log("add to library failed");
@@ -66,7 +65,7 @@ export default function Page() {
       }
       else {
         const imgInfo = await response.json();
-        setImageInfo(imgInfo as ImageInfo);
+        setImageInfo(imgInfo as ApiImage);
         setImageGenerationPending(false);
       }
     }

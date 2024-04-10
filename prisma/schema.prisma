@@ -17,6 +17,7 @@ datasource db {
 model Tenant {
   id      Int      @id @default(autoincrement())
   name    String   @unique
+  hostname String  @unique
   users   User[]
   library Library?
 }

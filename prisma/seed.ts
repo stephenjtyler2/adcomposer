@@ -16,11 +16,24 @@ async function loadSeedTenants () {
         update: {},
         create: {
             name: "Acme Corporation",
+            hostname: "acme.adcomposer.com",
             library: {
                 
             }
         }
     })
+    const t2 = await prisma.tenant.upsert ({
+        where: { name: "XYZ Biotronics" },
+        update: {},
+        create: {
+            name: "XYZ Biotronics PLC",
+            hostname: "xyz.adcomposer.com",
+            library: {
+                
+            }
+        }
+    })
+
     return [t];
     
 }

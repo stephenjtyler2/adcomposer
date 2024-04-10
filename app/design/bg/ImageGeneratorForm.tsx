@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Typography, Box, SelectChangeEvent, Button } from '@mui/material';
-import Selector from '@/lib/client/components/controlledFormFields/Selector';
-import TextInputBox from '@/lib/client/components/controlledFormFields/TextInputBox';
-import { targetMarkets } from '@/lib/client/config/targetMarkets';
+import Selector from '@/components/controlledFormFields/Selector';
+import TextInputBox from '@/components/controlledFormFields/TextInputBox';
+import { targetMarkets } from '@/config/targetMarkets';
 import { ImageAspectRatio, ImageStyle } from '@backend/apitypes';
 
 const showImageAspectRatio: boolean = process.env.NEXT_PUBLIC_DALL_E_VERSION === "3";

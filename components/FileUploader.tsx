@@ -3,13 +3,13 @@ import axios from 'axios';
 
 import { Button, Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, LinearProgress } from '@mui/material';
 import UploadIcon from '@mui/icons-material/Upload';
-import {ImageInfo} from '@backend/apitypes';
+import {ApiImage} from '@backend/apitypes';
 
 const maxImgSizeMB:number = parseInt(process.env.NEXT_PUBLIC_MAX_IMG_UPLOAD_SIZE_MB??"5");
 const maxImgSizeBytes =  maxImgSizeMB * 1024 * 1024;
 
 export type Props = {
-    onUploadSuccess?: (imageInfo:ImageInfo) => void;
+    onUploadSuccess?: (imageInfo:ApiImage) => void;
 }
 
 export default function FileUploader({onUploadSuccess}:Props) {
@@ -50,7 +50,7 @@ export default function FileUploader({onUploadSuccess}:Props) {
             console.log("Post response successful");
             setUploadComplete(true);
             if (onUploadSuccess) {
-                let imgInfo:ImageInfo = response.data as ImageInfo;
+                let imgInfo:ApiImage = response.data as ApiImage;
                 onUploadSuccess(imgInfo);
             }
         })

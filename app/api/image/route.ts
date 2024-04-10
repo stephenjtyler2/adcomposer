@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { storeImageBlob, deleteImageBlob } from '../(utils)/(blobstore)/blobstoreAWS';
 import { addImageToLibrary, deleteImage as deleteImageDB, getImage, saveImage } from '../(utils)/(db)/data';
 import { makeImageDalleSync } from './dalle';
-import { ImageInfo } from '../apitypes';
+import { ApiImage } from '../apitypes';
 
 // POST = Generate an image (creates the image in blobstore and db, but does NOT add to library - that is a separate user action)
 // DELETE = delete an image (hard delete: removes from library if it's in one, and then from db and from blobstore)
@@ -32,7 +32,7 @@ export async function DELETE(req: Request) {
         const imageId = parseInt(body.imgId);
 
         try{
-            const imageInfo : ImageInfo = await getImage(imageId); 
+            const imageInfo : ApiImage = await getImage(imageId); 
             await deleteImageDB(imageId);
             await deleteImageBlob(imageInfo.path);
             let success = true;
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
         const blobSaveData = await storeImageBlob(filename, image, "Generated");
 
         // save the metadata to db
-        const imgInfo: ImageInfo = {
+        const imgInfo: ApiImage = {
             id: undefined,
             imageOrigin: "Generated",
             createdById: userId,
