@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, {useContext} from 'react';
 import { Typography, Box, Menu, Avatar, MenuItem, Tooltip, IconButton } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import { AuthContext } from './AuthContextProvider';
 
 type Props = {
     title: string,
@@ -19,17 +20,31 @@ function PageHeader(props: Props) {
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
     };
-    
-    const handleCloseNavMenu = () => {
+
+    const {user, userLoggedOut} = useContext(AuthContext);
+
+    const handleMenuItemClick = (setting: string) => () => {
+        switch (setting) {
+            case 'Logout':
+                userLoggedOut();            
+                break;
+            case 'Dashboard':
+                break;
+            case 'Account':
+                break;
+            case 'Profile':
+                break;
+        }
+
         setAnchorElNav(null);
     };
-    
+
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
     };
-    
+
     return (
-        <Box sx={{display:"flex", m:2}}>
+        <Box sx={{ display: "flex", m: 2 }}>
             <Box sx={{ flexGrow: 1 }}>
                 <Typography variant="h5">
                     {props.title}
@@ -38,7 +53,7 @@ function PageHeader(props: Props) {
             <Box >
                 <Tooltip title="Open settings">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                        <Avatar sx = {(theme)=>({bgcolor: theme.palette.primary.main})} alt="Stephen Tyler">S</Avatar>
+                        <Avatar sx={(theme) => ({ bgcolor: theme.palette.primary.main })} alt="Stephen Tyler">S</Avatar>
                     </IconButton>
                 </Tooltip>
                 <Menu
@@ -58,7 +73,7 @@ function PageHeader(props: Props) {
                     onClose={handleCloseUserMenu}
                 >
                     {settings.map((setting) => (
-                        <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                        <MenuItem key={setting} onClick={handleMenuItemClick(setting)}>
                             <Typography textAlign="center">{setting}</Typography>
                         </MenuItem>
                     ))}

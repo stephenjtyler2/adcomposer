@@ -3,11 +3,9 @@ import { storeImageBlob } from '../(utils)/(blobstore)/blobstoreAWS';
 import { saveImage } from '../(utils)/(db)/data';
 import { ApiImage } from '../apitypes';
 import { addImageToLibrary } from '../(utils)/(db)/data';
+import { apiRouteAuthCheck } from '@backend/(utils)/(jwt)/tokenUtils';
 
-const processFile = async (imageFile: File) => {
-    // For now hardcoding this
-    const userId: number = 1;
-
+const processFile = async (imageFile: File, userId:number) => {
     const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
     const image: Blob = new Blob([new Uint8Array(imageBuffer)], { type: 'image/bmp' });
 
@@ -31,14 +29,13 @@ const processFile = async (imageFile: File) => {
 
     // Save image record to db if the save to blobstore was successful
     if (blobSaveData.saveStatus == "Complete") {
-        const { id } = await saveImage(imgInfo);
+        const id = await saveImage(imgInfo);
         imgInfo.id = id;
 
         if (imgInfo.id) {
-            const libraryId = 1;  // for now
             console.log("adding uploaded image to library");
-            await addImageToLibrary(imgInfo.id, libraryId);
-            imgInfo.libraryId = libraryId;
+            const updatedImage = await addImageToLibrary(imgInfo.id, userId);
+            imgInfo.libraryId = updatedImage.libraryId;
         }
     }
 
@@ -46,6 +43,8 @@ const processFile = async (imageFile: File) => {
 }
 
 export async function POST(req: Request) {
+    const authCheckResponse = apiRouteAuthCheck(req);
+    if (!authCheckResponse.success) return Response.json({},{status:401});
 
     const formData = await req.formData();
 
@@ -58,7 +57,7 @@ export async function POST(req: Request) {
 
     console.log(imageFile);
 
-    const imgInfo: ApiImage = await processFile(imageFile);
+    const imgInfo: ApiImage = await processFile(imageFile, authCheckResponse.userId);
     console.log('done');
 
     return Response.json(imgInfo);

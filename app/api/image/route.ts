@@ -3,52 +3,61 @@ import { storeImageBlob, deleteImageBlob } from '../(utils)/(blobstore)/blobstor
 import { addImageToLibrary, deleteImage as deleteImageDB, getImage, saveImage } from '../(utils)/(db)/data';
 import { makeImageDalleSync } from './dalle';
 import { ApiImage } from '../apitypes';
+import { apiRouteAuthCheck } from '@backend/(utils)/(jwt)/tokenUtils';
 
 // POST = Generate an image (creates the image in blobstore and db, but does NOT add to library - that is a separate user action)
 // DELETE = delete an image (hard delete: removes from library if it's in one, and then from db and from blobstore)
 // PATCH - add to the library
 
 export async function PATCH(req: Request) {
-    const {action, imgId} = await req.json();
-    const userId = 1;
-    if (action =="AddToLibrary") {
-        const libraryId = 1;  // for now
+    const authCheckResponse = apiRouteAuthCheck(req);
+    if (!authCheckResponse.success) return Response.json({}, { status: 401 });
+
+    const { action, imgId } = await req.json();
+
+    if (action == "AddToLibrary") {
         try {
-            const imgInfo = await addImageToLibrary(imgId,libraryId);
+            const imgInfo = await addImageToLibrary(imgId, authCheckResponse.userId);
             return Response.json(imgInfo);
-        } catch(e) {
+        } catch (e) {
             console.log("error in adding to library");
             console.log(e);
-            return Response.json({status:404})
+            return Response.json({},{ status: 404 })
         }
     }
-    return Response.json({status:400});
+    return Response.json({},{ status: 400 });
 }
 export async function DELETE(req: Request) {
+    const authCheckResponse = apiRouteAuthCheck(req);
+    if (!authCheckResponse.success) return Response.json({}, { status: 401 });
+
     const body = await req.json();
 
-    let success:boolean = false;
+    let success: boolean = false;
     if (body && body.imgId) {
         const imageId = parseInt(body.imgId);
 
-        try{
-            const imageInfo : ApiImage = await getImage(imageId); 
-            await deleteImageDB(imageId);
-            await deleteImageBlob(imageInfo.path);
-            let success = true;
+        try {
+            const imageInfo: ApiImage | null = await getImage(imageId);
+            if (imageInfo) {
+                await deleteImageDB(imageId);
+                if (imageInfo.path) await deleteImageBlob(imageInfo.path);
+                success = true;
+            }
         }
         catch (e) {
             console.log(e);
         }
     }
-    return Response.json({ status: success ? 200 : 400 });
+    return Response.json({},{ status: success ? 200 : 400 });
 }
 
 export async function POST(req: Request) {
+    const authCheckResponse = apiRouteAuthCheck(req);
+    if (!authCheckResponse.success) return Response.json({}, { status: 401 });
+
     const { prompt, aspectRatio } = await req.json();
     const createDate: Date = new Date(Date.now());
-    // For now hardcoding this
-    const userId: number = 1;
 
     try {
         const image: Blob = await makeImageDalleSync(prompt, aspectRatio);
@@ -62,7 +71,7 @@ export async function POST(req: Request) {
         const imgInfo: ApiImage = {
             id: undefined,
             imageOrigin: "Generated",
-            createdById: userId,
+            createdById: authCheckResponse.userId,
             prompt: prompt,
             createDate: createDate,
             // When we make this async this initial insert will be "Pending" and it will be updated on the completion.
@@ -73,7 +82,7 @@ export async function POST(req: Request) {
 
         // Save image record to db if the save to blobstore was successful
         if (blobSaveData.saveStatus == "Complete") {
-            const { id } = await saveImage(imgInfo);
+            const id = await saveImage(imgInfo);
             imgInfo.id = id;
         }
 
@@ -86,7 +95,7 @@ export async function POST(req: Request) {
 
         return Response.json({
             imageOrigin: "Generated",
-            createdById: userId,
+            createdById: authCheckResponse.userId,
             prompt: prompt,
             createDate: createDate,
             // When we make this async this initial insert will be "Pending" and it will be updated on the completion.

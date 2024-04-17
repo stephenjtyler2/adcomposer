@@ -2,27 +2,47 @@
 import React, { useEffect, useState , useContext} from 'react';
 
 import { Typography, Box, Stack, TextField, Button, Container } from '@mui/material';
-import { AppContext, AppContextType } from '@/components/AppContextProvider';
-
+import { AppContext} from '@/components/AppContextProvider';
+import { authenticateWithCreds } from '@/components/apiClient/auth';
+import { AuthContext } from '@/components/AuthContextProvider';
+import { redirect } from 'next/navigation';
 
 const title = "Ad Composer"
 const Login = () => {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const {tenantId, tenantName} = useContext(AppContext) as AppContextType;
+    const {tenantId, tenantName} = useContext(AppContext);
+    const {user, userLoggedIn} = useContext(AuthContext);
 
     useEffect(()=>{
         console.log(`Login: useEffect = tenantId is ${tenantId}`);
     },[tenantId, tenantName]);
 
-    const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+
+    // we are logged in already, redirect to /home
+    if (user) {
+        console.log("login: user already logged in, redirecting to home");
+        redirect('/home');
+    }
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         // Handle login logic here
-        console.log("Logging in with email:", email, "and password:", password);
+        authenticateWithCreds(username,password)
+        .then(user=> {
+            if (user) {
+                console.log('login: user authenticated');
+                console.log(user);
+                userLoggedIn(user);
+            }
+            else {
+                console.log('login: user auth failed');
+            }
+        })
     };
 
-    console.log(`Login render: tenantId: ${tenantId}`);
+    
+    // console.log(`Login render: tenantId: ${tenantId}`);
 
     if (tenantId==-1) return (<></>); // suppress the initial render that happens before the app context is loaded
 
@@ -37,13 +57,13 @@ const Login = () => {
                             margin="normal"
                             required
                             fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
+                            id="username"
+                            label="Username"
+                            name="username"
+                            autoComplete="username"
                             autoFocus
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                         />
                         <TextField
                             variant="outlined"

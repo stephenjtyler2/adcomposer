@@ -1,3 +1,5 @@
+import { SelectObjectContentEventStreamFilterSensitiveLog } from "@aws-sdk/client-s3";
+
 export type ImageOrigin = "Generated" | "Uploaded";
 export type ImageGenerationStatus = "Pending"|"Complete"|"Failed";
 export type ImageAspectRatio = "portrait" | "landscape"|"square";
@@ -7,8 +9,8 @@ export type ApiImage = {
     id: number|undefined,
     imageOrigin: ImageOrigin,
     createdById: number,
-    prompt: string,
-    createDate: Date,
+    prompt: string|null,
+    createDate: Date|null,
     createStatus: ImageGenerationStatus,
     imgUrl: string,
     libraryId?: number|null,
@@ -27,4 +29,9 @@ export type ApiUser = {
     name: string|undefined,
     email: string | undefined,
     avatarImageUrl: string|undefined
+}
+
+export type ApiAuthSimpleCredentials= {
+    username: string,
+    password: string
 }

@@ -1,4 +1,5 @@
-// providers.js (app directory)
+// This provides the app context (config) for the relevant tenant - as detected from the host URL.
+
 'use client'
 import { createContext,useState, useEffect} from 'react';
 import { getTenant } from './apiClient/tenant';
@@ -7,7 +8,7 @@ export type AppContextType = {
     tenantId: number
     tenantName: string
 }
-export const AppContext = createContext({});
+export const AppContext = createContext<AppContextType>({tenantId:-1, tenantName: ""});
 
 // This component reads and stores the tenant config and provides it via context to component hierarcy that is wraps.
 export default function ({children}: React.PropsWithChildren) {

@@ -3,15 +3,14 @@ import {PrismaClient} from '@prisma/client'
 const prisma = new PrismaClient();
 async function main () {
     const t = await loadSeedTenants();
-    const tenantId = t[0].id;
-
-    await loadSeedLibrary(tenantId);
-    await loadSeedUsers(tenantId);
+    console.log("db seed: complete");
 }
 
 
 async function loadSeedTenants () {
-    const t = await prisma.tenant.upsert ({
+
+    console.log("db seed: creating tenant 1");
+    const t1 = await prisma.tenant.upsert ({
         where: { name: "Acme Corporation" },
         update: {},
         create: {
@@ -22,8 +21,10 @@ async function loadSeedTenants () {
             }
         }
     })
+
+    console.log("db seed: creating tenant 2");
     const t2 = await prisma.tenant.upsert ({
-        where: { name: "XYZ Biotronics" },
+        where: { name: "XYZ Biotronics PLC" },
         update: {},
         create: {
             name: "XYZ Biotronics PLC",
@@ -34,11 +35,14 @@ async function loadSeedTenants () {
         }
     })
 
-    return [t];
+    await loadSeedLibrary(t1.id);
+    await loadSeedUsers(t1.id);
     
 }
 
 async function loadSeedLibrary(tenantId:number) {
+    console.log(`db seed: creating library for tenant ${tenantId}`);
+
     const l = await prisma.library.upsert({
         where: {tenantId: tenantId},
         update: {},
@@ -47,21 +51,29 @@ async function loadSeedLibrary(tenantId:number) {
 }
 
 async function loadSeedUsers (tenantId: number) {
+    console.log(`db seed: creating seed identity tenant ${tenantId}`);
     const {id:identityId} = await prisma.identity.upsert (
         {
             where: {
-                idpIdentityId: "localIDP-seedIdentity-1",
+                authUsername: "styler",
             },
-            update: {},
+            update: {
+                authSalt: 'abcd',
+                authPasswordHash: 'e5c712aa094c26e68a4b8fcd6c5ea72a8d722fd238e6102ae219a04ea041f797',
+                idpProfileName: "Stephen Tyler",
+                idpProfileEmail: 'stephenjtyler@gmail.com',
+            },
             create: {
-                idpIdentityId: "localIDP-seedIdentity-1",
-                idpUrl: "local",
-                name: 'Stephen Tyler',
-                email: 'stephenjtyler@gmail.com',
+                authUsername: 'styler',
+                authSalt: 'abcd',
+                authPasswordHash: 'e5c712aa094c26e68a4b8fcd6c5ea72a8d722fd238e6102ae219a04ea041f797',
+                idpProfileName: "Stephen Tyler",
+                idpProfileEmail: 'stephenjtyler@gmail.com',
             }
         }
     );
 
+    console.log(`db seed: creating seed user for idenrity ${identityId}`);
     // Can't use upsert because the constraints are such that tenantId and identityId are unique in combination, but neither is @unique in the schema
     // so where does not see the combo as unique.   So have to try to read and if not found, insert.
     let user  = await prisma.user.findFirst({

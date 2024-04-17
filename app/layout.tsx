@@ -14,10 +14,11 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import theme from '@/config/theme';
 import type { AppProps } from "next/app";
 import createEmotionCache from '@/config/createEmotionCache';
+import AuthContextProvider from "@/components/AuthContextProvider";
 
 const AppContextProvider = dynamic(() => import('../components/AppContextProvider'), {
-   ssr: false, // forces the render to ONLY happen client side
- })
+  ssr: false, // forces the render to ONLY happen client side
+})
 
 /*
 export const metadata: Metadata = {
@@ -54,12 +55,14 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AppContextProvider>
-          <CacheProvider value={emotionCache}>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              {children}
-            </ThemeProvider>
-          </CacheProvider>
+          <AuthContextProvider>
+            <CacheProvider value={emotionCache}>
+              <ThemeProvider theme={theme}>
+                <CssBaseline />
+                {children}
+              </ThemeProvider>
+            </CacheProvider>
+          </AuthContextProvider>
         </AppContextProvider>
       </body>
     </html>

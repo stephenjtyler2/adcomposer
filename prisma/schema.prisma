@@ -37,14 +37,30 @@ model Tenant {
 // Thus, the identity fred@gmail.com can login to tenant 1 and map to the user {t:1, u:34} but if they login in to tenant 2 they could be {t:2, u:43} which is a totally different user as far as the app is concerned
 // even though the creds to login and authentication method were the same in both cases.
 
+
 model Identity {
-  id             Int     @id @default(autoincrement())
-  idpIdentityId  String  @unique
-  idpUrl         String?
-  name           String?
-  email          String?
-  avatarImageUrl String?
-  users          User[]
+  id             Int     @id @default(autoincrement())   // local unique id
+  idpUrl         String?                                 // the url of the idp endpoint managing this identity and its auth mechanism ( null for locally managed identities ).
+  idpIdentityId  String?                                 // the user_id the IDP uses to identify this identity ( null for locally managed identities ).
+
+  users          User[]                                  // the associated applicaiton users (max 1 per tenant, typically just 1 globally)
+
+  // standard OpenIDConnect profile fields that most IDPs will provide on the profile.   Locally managed identities - will only have a few of these set (name, email, picture)
+  idpProfileName           String?                       // the name used for general display purposes e.g. (Jane Smith)
+  idpProfileFamilyName     String  @default("")       
+  idpProfileMiddleName     String  @default("")
+  idpProfileGivenName      String @default("")
+  idpProfileNickname       String @default("")
+  idpProfileUpdatedAt      DateTime?
+  idpProfileEmail          String @default("")
+  idpProfileEmailVerified  Boolean  @default(false)
+  idpProfilePictureUrl     String?
+
+  // for local users, this app manages the identity and the auth (login) process, for which we also need the username and password.
+  // For externally managed identities we don't need this as the idp will handle the auth process. 
+  authUsername             String? @unique        // the identifier user for authentication / login (often an eamil address but does not have to be - just needs to be globally unique - i.e. unique across ALL tenants)
+  authPasswordHash         String?                // SHA256 hash of the user's password with their salt appended to it (which makes two users with the same password have different stored hashes)
+  authSalt                 String @default("salt") // random 4 character string generated when the identity is created.   Appended to the password before it is hashed and stored.
 }
 
 model User {
@@ -55,6 +71,7 @@ model User {
   identityId    Int?
   permissions   Permission[]
   createdImages Image[]
+  @@unique([tenantId, identityId]) // an identity can map to multiple users across tenants but only to one user in any given tenant.  Combo of tenantId/identityId should be unique.
 }
 
 model Permission {
@@ -88,6 +105,11 @@ enum ImageType {
   Backgrounds
   Object
 }
+enum ImageCreationStatus {
+  Pending
+  Complete
+  Failed
+}
 
 // An image object represents an image file in the blobstore.   In the case of generated images, they may or may not have been added to a library.
 // We only keep generated images for 2 days unless they have been added to a library.
@@ -97,7 +119,7 @@ model Image {
   imageOrigin          ImageOrigin
   prompt               String?
   createDate           DateTime?
-  createStatus         String?
+  createStatus         ImageCreationStatus
   createdBy            User        @relation(fields: [createdById], references: [id])
   createdById          Int
   imgUrl               String      // full url includes bucket name and s3 base uri components.  e.g. https://mybucket.s3.amazonaws.com/path1/path2/myfile.bmp
