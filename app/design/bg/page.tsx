@@ -75,35 +75,35 @@ export default function Page() {
     }
   }
 
+  //        <Box sx={{ height: "100%", display: "flex", flexDirection: "column", border: 2, borderColor: "motionPoint.borders", mr: 2, p: 1 }}>
 
   function renderSideBar() {
     return (
-      <Box sx={{ height: "100%", display: "flex", flexDirection: "column", border: 2, borderColor: "motionPoint.borders", mr: 2, p: 1 }}>
-        <Box sx={{ mb: 2 }}>
+      <Stack sx={{ height: "100%", borderLeft:2, borderColor: "motionPoint.borders", px:1 }}>
+        
+        <Box sx={{ p:2, alignSelf: "end" }}>
+          <FileUploader onUploadSuccess={handleFileUploaded} />
+        </Box>
+        <Divider />
+        <Box sx={{ border: 0, borderColor: "motionPoint.borders", p:1, my:2 }}>
           <ImageGeneratorForm onGenerate={generateImage} generateButtonDisabled={imageGenerationPending} />
         </Box>
         <Divider />
-        <Box sx={{ mt: 2, flexGrow: 1 }}>
+        <Box sx={{ flexGrow:1, border: 0, borderColor: "motionPoint.borders", p:1 }}>
           <Recents />
         </Box>
-      </Box>
+      </Stack >
 
     );
   }
-  //      <Box sx={{ height: "100%", display: 'flex', flexDirection: 'column', border: 0, flexGrow: 1, p: 0, justifyContent: "center" }}>
 
   function renderMainPanel() {
     return (
       <Stack direction="column" sx={{ height: "100%", }}>
-        <Stack direction="row" sx={{ mb: 1 }} alignItems="center">
-          <Box sx={{ mr: 1 }}>
-            <FileUploader onUploadSuccess={handleFileUploaded} />
-          </Box>
-          <Box sx={{ flexGrow: 1 }}>
-            <LibrarySearch assetTypeFilter='Backgrounds' />
-          </Box>
-        </Stack>
-        <Box sx={{ border: 2, p: 1, borderColor: "motionPoint.borders", flexGrow: 1 }}>
+        <Box sx={{mb:1}}>
+          <LibrarySearch assetTypeFilter='Backgrounds' />
+        </Box>
+        <Box sx={{ border:2, borderColor: "motionPoint.borders", p: 1, flexGrow: 1 }}>
           <ImageViewer
             imageInfo={imageInfo}
             imageGenerationPending={imageGenerationPending}
@@ -116,12 +116,12 @@ export default function Page() {
   }
 
   return (
-    <PageContainer title="Background Designer">
+    <PageContainer title="Backgrounds">
       <Stack direction="row" sx={{ width: "100%", height: '100%' }}>
-        <Box id="box-left" sx={{ border: 0, flexGrow: 1, mx: 1, mb: 1 }}>
+        <Box id="box-left" sx={{ flexGrow: 1, mx: 1, mb: 0 }}>
           {renderMainPanel()}
         </Box>
-        <Box id="box-right" sx={{ border: 0, minWidth: rightWidth, ml: 1, mb: 1 }}>
+        <Box id="box-right" sx={{ minWidth: rightWidth, ml: 1, mb: 0 }}>
           {renderSideBar()}
         </Box>
       </Stack>

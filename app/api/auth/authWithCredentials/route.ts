@@ -1,7 +1,7 @@
 import { ApiAuthSimpleCredentials, ApiUser } from "@backend/apitypes";
-import { authenticate } from "./data";
+import { authenticateWithCreds } from "../data";
 import { headers, cookies } from "next/headers";
-import { getDomainNameFromHostName } from "@backend/(utils)/helpers";
+import { doErrorResponse, getDomainNameFromHostName } from "@backend/(utils)/helpers";
 import { getTenantByHostname } from "@backend/tenant/data";
 import { makeJWTAccessToken, makeJWTRefreshToken } from "@backend/(utils)/(jwt)/tokenUtils";
 
@@ -10,7 +10,6 @@ export async function POST(req: Request) {
     console.log("/api/authWithCredentials");
 
     const creds = await req.json() as ApiAuthSimpleCredentials;
-    console.log(creds);
 
     const headersList = headers();
     const hostname = headersList.get('host');
@@ -23,7 +22,7 @@ export async function POST(req: Request) {
     if (!tenant) return doErrorResponse(401);
     
     // console.log(tenant);
-    const user: ApiUser | null = await authenticate(tenant?.id, creds.username, creds.password);
+    const user: ApiUser | null = await authenticateWithCreds(tenant?.id, creds.username, creds.password);
 
     // console.log('after authenticate');
     // console.log(user);
@@ -48,9 +47,3 @@ export async function POST(req: Request) {
      }
 }
 
-
-const doErrorResponse = async (statusCode:number) => {
-    cookies().delete('accessToken');
-    cookies().delete('refreshToken');
-    return Response.json({}, { status: statusCode });
-}

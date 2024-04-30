@@ -57,7 +57,7 @@ export default function FileUploader({onUploadSuccess}:Props) {
         .catch(error => {
             console.log("Post response error");
             console.error(error);
-            // handle error here
+            // handle error here - specifically check for 401 and logout user if you get one
             setUploadFailed(true);
         });
     }

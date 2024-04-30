@@ -6,6 +6,7 @@ import {
   } from "@aws-sdk/client-s3";
 
 import { ImageOrigin } from '@backend/apitypes';
+import { makeThumbnail } from "../(images)/imageUtils";
 
 type SaveStatus = "Complete" | "Failed";
 export type BlobSaveData = {
@@ -42,6 +43,8 @@ export async function deleteImageBlob(path: string) : Promise<boolean> {
 export async function storeImageBlob(filename:string, image:Blob, imageOrigin: ImageOrigin) : Promise<BlobSaveData> {
 
     const path = `images/${imageOrigin.toLowerCase()}/${filename}`;
+    const thumbnailPath = `images/${imageOrigin.toLowerCase()}/tn_${filename}`;
+
     console.log(`Saving image to path: ${path}`);
 
     let saveStatus : SaveStatus ="Complete";
@@ -49,12 +52,28 @@ export async function storeImageBlob(filename:string, image:Blob, imageOrigin: I
     try {
         const imageBuffer = await image.arrayBuffer();
         
+        console.log("sending main image to S3");        
         await client.send(new PutObjectCommand({ 
             Bucket: process.env.AWS_S3_BUCKET_NAME, 
             Key: path, 
             // @ts-ignore
             Body:imageBuffer}));   
+        
+        console.log("creating thumbnail");
+        const thumbnailImageBuffer = await makeThumbnail(imageBuffer);
+        
+        if (thumbnailImageBuffer) {
+            console.log("sending thumnail image to S3");        
+            await client.send (new PutObjectCommand({ 
+                Bucket: process.env.AWS_S3_BUCKET_NAME, 
+                Key: thumbnailPath, 
+                // @ts-ignore
+                Body:thumbnailImageBuffer}));
         }
+        else {
+            console.log("Unable to create thumbnail");
+        }
+    }   
     catch(se) {
         console.log("S3 Service Exception");
         console.log(se);

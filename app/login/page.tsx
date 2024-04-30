@@ -25,6 +25,7 @@ const Login = () => {
         console.log("login: user already logged in, redirecting to home");
         redirect('/home');
     }
+
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         // Handle login logic here
@@ -32,7 +33,7 @@ const Login = () => {
         .then(user=> {
             if (user) {
                 console.log('login: user authenticated');
-                console.log(user);
+                // console.log(user);
                 userLoggedIn(user);
             }
             else {
@@ -49,7 +50,8 @@ const Login = () => {
     return (
         <Container component="main" maxWidth="xs" sx={{ border: 1, mt: 8 }}>
             <Stack direction="column" sx={{ m: 2, alignItems: 'center' }}>
-                <Typography component="h1" variant="h5">{`${title} (${tenantName})`}</Typography>
+                <Typography variant="h4">{`${title}`}</Typography>
+                <Typography variant="body1">{`${tenantName}`}</Typography>
                 <Box sx={{ mt: 1, width: "100%" }}>
                     <form onSubmit={handleLogin}>
                         <TextField

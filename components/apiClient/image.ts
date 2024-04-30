@@ -1,4 +1,4 @@
-import { ImageAspectRatio, ApiImage } from "@backend/apitypes";
+import { ImageAspectRatio } from "@backend/apitypes";
 
 export async function generateImage (prompt:string, aspectRatio: ImageAspectRatio) {
     return fetch ('/api/image', {

@@ -32,9 +32,10 @@ export const apiRouteAuthCheck = (req: Request): ApiRouteAuthCheckResponse => {
 
     if (!accessToken) return fail;
 
+    // console.log('before access token verify');
     let decoded = verifyToken(accessToken.value);
-    console.log('after access token verify');
-    console.log(decoded);
+    // console.log('after access token verify');
+    // console.log(decoded);
     // @ts-ignore
     if (decoded && decoded.user) {
         // @ts-ignore
@@ -48,7 +49,9 @@ export const apiRouteAuthCheck = (req: Request): ApiRouteAuthCheckResponse => {
     // no juice with the access token, try the refresh token...  
     // NOTE: I HAVE NOT TESTED ANY OF THE REFRESH LOGIC / FUNCTIONALITY YET
     if (refreshToken && refreshToken.value) {
+        // console.log('before refresh token verify');
         let decoded = verifyToken(refreshToken.value);
+        // console.log('after refresh token verify');
 
         // @ts-ignore
         if (decoded && decoded.user) {
@@ -84,6 +87,7 @@ export const verifyToken = (token: string) => {
     }
     catch (e) {
         console.log('attempt to decode with current signing key failed');
+        console.log(e);
     }
 
     if (!process.env.JWT_PRIOR_SIGNING_KEY) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, InputBase } from '@mui/material';
+import { Box, Stack, InputBase, Button } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -56,16 +56,19 @@ type Props = {
 
 export default function LibrarySearch({ assetTypeFilter }: Props) {
     return (
-        <Box sx = {{border:2, p:1, borderColor:'motionPoint.borders'}}>
-            <Search>
-                <SearchIconWrapper>
-                    <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                    placeholder="Search Library…"
-                    inputProps={{ 'aria-label': 'search' }}
-                />
-            </Search>
-        </Box>
+        <Stack direction="row">
+            <Box sx={{ border: 2, p: 1, flexGrow: 1, borderColor: 'motionPoint.borders' }}>
+                <Search>
+                    <SearchIconWrapper>
+                        <SearchIcon />
+                    </SearchIconWrapper>
+                    <StyledInputBase
+                        placeholder="Search Library…"
+                        inputProps={{ 'aria-label': 'search' }}
+                    />
+                </Search>
+            </Box>
+            <Button sx = {{ml:1}} variant = "contained" color = "secondary">Show All</Button>
+        </Stack>
     );
 }

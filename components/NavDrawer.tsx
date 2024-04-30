@@ -21,14 +21,14 @@ function NavDrawer() {
     const menuStructure =
         [
             {
-                sectionTitle: "Visual Elements Design",
+                sectionTitle: "Visual Elements",
                 elements: [
                     { label: 'Backgrounds', path: '/design/bg', icon: <WallpaperIcon /> },
                     { label: 'Objects', path: '/design/obj', icon: <AutoAwesomeIcon /> },
                 ]
             },
             {
-                sectionTitle: "Ad Design",
+                sectionTitle: "Ads",
                 elements: [
                     { label: 'Static Images', path: '/design/static', icon: <CropOriginalIcon /> },
                     { label: 'Dynamic Web Ads', path: '/design/dynamic', icon: <AnimationIcon /> },
@@ -36,14 +36,14 @@ function NavDrawer() {
                 ]
             },
             {
-                sectionTitle: "Create Campaigns",
+                sectionTitle: "Campaigns",
                 elements: [
                     { label: 'Define', path: '/campaigns/define', icon: <CampaignIcon /> },
                     { label: 'Deploy', path: '/campaigns/deploy', icon: <PublishIcon /> },
                 ]
             },
             {
-                sectionTitle: "Monitor Performance",
+                sectionTitle: "Performance",
                 elements: [
                     { label: 'Analytics', path: '/monitor/analytics', icon: <InsightsIcon /> },
                     { label: 'Calendar', path: '/monitor/calendar', icon: <CalendarMonthIcon /> },
@@ -82,7 +82,7 @@ function NavDrawer() {
     );
 
     const renderNavMenu = () => (
-        <Box sx={{ flexGrow:1, borderRight: 2, borderBottom: 2, mb: 1, borderColor: 'motionPoint.borders' }}>
+        <Box sx={{ flexGrow:1, borderRight: 2, borderBottom: 2, p:0, m:0, borderColor: 'motionPoint.borders' }}>
             <Box sx={{ overflow: 'auto' }}>
                 <Box key="menuItems"
                     sx={(theme) => ({

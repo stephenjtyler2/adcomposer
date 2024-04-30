@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 // for a given username and password, if the identity/user is found and the password is right, returns the ApiUser object
 // which combines in a single object everything the client side needs to know about the user that is associated to the identity
 // that successfully authenticated.    For more on identities vs users, see the comments in schema.prisma.
-export async function authenticate(tenantId: number, username: string, password: string): Promise<ApiUser | null> {
+export async function authenticateWithCreds(tenantId: number, username: string, password: string): Promise<ApiUser | null> {
     const identity = await prisma.identity.findUnique({
         where: {
             authUsername: username

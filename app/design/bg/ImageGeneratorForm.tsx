@@ -55,7 +55,7 @@ export default function ImageGeneratorForm({ onGenerate, generateButtonDisabled 
 
 
   return (<>
-    <Typography variant='h6'><b>Image Generator</b></Typography>
+    <Typography variant='h6'><b>Generate Image</b></Typography>
     <Selector
       type="dropdown"
       value={targetMarket.optionValue}
