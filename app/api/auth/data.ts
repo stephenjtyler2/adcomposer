@@ -34,7 +34,5 @@ export async function authenticateWithCreds(tenantId: number, username: string, 
         name: identity.idpProfileName??"",
         email: identity.idpProfileEmail,
         avatarImageUrl: identity.idpProfilePictureUrl??""
-    })
-
-    return null;
+    });
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { PageContainer } from '@/components/PageContainer';
 import ImageViewer from './ImageViewer';
 import { Box, Divider, Stack } from '@mui/material';
@@ -13,24 +13,33 @@ import FileUploader from '@/components/FileUploader';
 
 import { deleteImage } from '@/components/apiClient/image';
 import { addImageToLibrary } from '@/components/apiClient/image';
+import ImageSearchResults from '@/components/ImageSearchResults';
+import { AuthContext } from '@/components/AuthContext';
 
 const rightWidth = 400;
 const noImageText = 'Search the library, upload or generate a new background.'
+
+type MainViewContents = "Image" | "SearchResults";
 
 export default function Page() {
 
   const [imageGenerationPending, setImageGenerationPending] = useState(false);
   const [imageInfo, setImageInfo] = useState<ApiImage | undefined>(undefined);
+  const [searchResults, setSearchResults] = useState<ApiImage[]>([]);
+  const [mainView, setMainView] = useState<MainViewContents>("Image");
+
+  const authContext = useContext(AuthContext);
 
   const handleFileUploaded = (imageInfo: ApiImage) => {
     console.log("file uploaed");
     console.log(imageInfo);
     setImageInfo(imageInfo);
+    setMainView("Image");
   }
 
   const handleDeleteImage = async () => {
     if (imageInfo && imageInfo.id) {
-      const success: boolean = await deleteImage(imageInfo.id);
+      const success: boolean = await deleteImage(authContext, imageInfo.id);
       if (success) {
         console.log("delete succeeded");
         setImageInfo(undefined);
@@ -42,7 +51,7 @@ export default function Page() {
   }
   const handleSaveImageToLibrary = async () => {
     if (imageInfo && imageInfo.id) {
-      const response = await addImageToLibrary(imageInfo.id);
+      const response = await addImageToLibrary(authContext, imageInfo.id);
       if (response && response.ok) {
         const imgInfo = await response.json();
         setImageInfo(imgInfo as ApiImage);
@@ -54,10 +63,16 @@ export default function Page() {
     }
   }
 
+  const handleSearchResults=(images: ApiImage[]) => {
+    setSearchResults(images);
+    setMainView("SearchResults");
+  }
+
   const generateImage = async (prompt: string, aspectRatio: ImageAspectRatio) => {
+    setMainView("Image");
     setImageGenerationPending(true);
     try {
-      const response = await ApiGenerateImage(prompt, aspectRatio);
+      const response = await ApiGenerateImage(authContext, prompt, aspectRatio);
       if (!response.ok) {
         console.log("Fetch of generated image failed");
         console.log(response);
@@ -101,15 +116,18 @@ export default function Page() {
     return (
       <Stack direction="column" sx={{ height: "100%", }}>
         <Box sx={{mb:1}}>
-          <LibrarySearch assetTypeFilter='Backgrounds' />
+          <LibrarySearch imageTypeFilter='Backgrounds' onSearchResults = {handleSearchResults}/>
         </Box>
         <Box sx={{ border:2, borderColor: "motionPoint.borders", p: 1, flexGrow: 1 }}>
+          {mainView=="Image" && 
           <ImageViewer
             imageInfo={imageInfo}
             imageGenerationPending={imageGenerationPending}
             noImageText={noImageText}
             onSaveToLibrary={handleSaveImageToLibrary}
             onRemoveFromLibrary={handleDeleteImage} />
+          }
+          {mainView =="SearchResults" && <ImageSearchResults images = {searchResults} />}
         </Box>
       </Stack>
     );

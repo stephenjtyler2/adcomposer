@@ -1,11 +1,10 @@
+import { isNumeric } from "@backend/(utils)/helpers";
+
 import OpenAI from "openai";
 const openai = new OpenAI({
     organization: process.env.OPEN_AI_ORGANIZATION
 });
-function isNumeric(n: string) {
-    const nf: number = parseFloat(n);
-    return !isNaN(nf) && isFinite(nf);
-}
+
 
 export async function makeImageDalleSync(prompt: string, aspectRatio:"portrait"|"landscape"|"square") {
     // submit the prompt to dall-e api

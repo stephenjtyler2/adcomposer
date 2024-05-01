@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { Box, Stack, InputBase, Button } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
+import { ApiImage } from '@backend/apitypes';
+import { imageSearch } from '../apiClient/image';
+import { ImageType } from '@prisma/client';
+import { AuthContext } from '../AuthContext';
 
 // Library Search Component.   
 // Library contains creative assets that are composed to form ads including
@@ -51,24 +55,50 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 type Props = {
-    assetTypeFilter: "None" | "Backgrounds" | "Objects" | "Widgets"
+    imageTypeFilter: ImageType,
+    onSearchResults: (images:ApiImage[]) => void
 }
 
-export default function LibrarySearch({ assetTypeFilter }: Props) {
+export default function LibrarySearch({ imageTypeFilter: imageTypeFilter, onSearchResults }: Props) {
+
+    const [searchString, setSearchString] = useState<string>("");
+
+    const authContext = useContext(AuthContext);
+
+    const handleSearchStringChange= (event:React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>) => {
+        setSearchString(event.target.value)
+    }
+
+    const handleSearchKeyUp= (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key == 'Enter') {
+            imageSearch(authContext, imageTypeFilter, searchString)
+            .then(searchResults=> {
+                if (searchResults) onSearchResults(searchResults);
+            })
+            .catch(e=> {
+                console.log("Error is library image search");
+                console.log(e);
+            })
+     
+
+        }
+    }
+
     return (
         <Stack direction="row">
             <Box sx={{ border: 2, p: 1, flexGrow: 1, borderColor: 'motionPoint.borders' }}>
-                <Search>
+                <Search onKeyUp={handleSearchKeyUp}>
                     <SearchIconWrapper>
                         <SearchIcon />
                     </SearchIconWrapper>
                     <StyledInputBase
                         placeholder="Search Library…"
                         inputProps={{ 'aria-label': 'search' }}
+                        onChange = {handleSearchStringChange}
                     />
+                    
                 </Search>
             </Box>
-            <Button sx = {{ml:1}} variant = "contained" color = "secondary">Show All</Button>
         </Stack>
     );
 }

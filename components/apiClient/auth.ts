@@ -8,7 +8,7 @@ export async function authenticateWithUserIdAndCookie(userId: number) : Promise<
         body: JSON.stringify ({userId:userId})
     })
     .then(async(response)=> {
-        if (!response || !response.ok) {
+        if (!response || !response.ok || response.status==401) {
             console.log('call to authWithUserIdAndCookie failed');
             return null;
         }
@@ -34,7 +34,7 @@ export async function authenticateWithCreds(username: string, password: string) 
         body: JSON.stringify ({username: username, password: password})
     })
     .then(async(response)=> {
-        if (!response || !response.ok) {
+        if (!response || !response.ok || response.status==401) {
             console.log('call to authWithCredentials failed');
             return null;
         }

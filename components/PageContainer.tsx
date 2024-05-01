@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { Box, Typography } from '@mui/material';
 import PageHeader from './PageHeader';
 import NavDrawer from './NavDrawer';
-import { AuthContext } from './AuthContextProvider';
+import { AuthContext } from './AuthContext';
 
 type P = {
     title: string,

@@ -1,5 +1,10 @@
 import { cookies } from "next/headers";
 
+export function isNumeric(n: string) {
+    const nf: number = parseFloat(n);
+    return !isNaN(nf) && isFinite(nf);
+}
+
 export function getDomainNameFromHostName(hostname: string) {
     let clientHost = hostname;
     // strip off port if present...

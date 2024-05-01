@@ -1,12 +1,9 @@
 'use client'
 
 import React from 'react';
-import { PageProps } from '@/.next/types/app/layout';
 import { PageContainer} from '@/components/PageContainer';
 
-export default function Page(props: PageProps) {
-
-
+export default function Page() {
   return (
     <PageContainer title ="Dashboard">
     </PageContainer>

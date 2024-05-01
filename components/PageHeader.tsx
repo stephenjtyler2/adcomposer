@@ -2,7 +2,7 @@
 import React, {useContext} from 'react';
 import { Typography, Box, Menu, Avatar, MenuItem, Tooltip, IconButton } from '@mui/material';
 import { useRouter } from 'next/navigation';
-import { AuthContext } from './AuthContextProvider';
+import { AuthContext } from './AuthContext';
 
 type Props = {
     title: string,

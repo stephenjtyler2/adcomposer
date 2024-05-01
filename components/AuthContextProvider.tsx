@@ -1,16 +1,10 @@
 // providers.js (app directory)
 'use client'
-import { createContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ApiUser } from '@backend/apitypes';
 import Cookies from 'js-cookie';
 import { authenticateWithUserIdAndCookie } from './apiClient/auth';
-
-export type AuthContextType = {
-    user: ApiUser | null,
-    userLoggedIn: (user: ApiUser) => void,
-    userLoggedOut: () => void,
-}
-export const AuthContext = createContext<AuthContextType>({ user: null, userLoggedIn: () => { }, userLoggedOut: () => { } });
+import { AuthContext, AuthContextType } from './AuthContext';
 
 // This component maintains the state for which user is logged in.   This, as well as functions to update that state are provided though a context object.
 // Those are called login and from the page header drop down menu option for logout respectively.
