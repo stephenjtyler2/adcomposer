@@ -15,7 +15,7 @@ export default function TextInputBox({id,label, placeholder, value, rows, onChan
         <Box 
             component="form"
             sx = {{
-                '& > :not(style)' : {p:1,mt:2}
+                '& > :not(style)' : {p:0,mt:2}
             }}
             noValidate
             autoComplete="off"

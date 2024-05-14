@@ -4,7 +4,7 @@
 // .then(response=>handle401Response)
 // .then(response=>)
 
-import { AuthContextType } from "@/components/AuthContext";
+import { AuthContextType } from "@/components/contexts/AuthContext";
 
 export async function handleUnauthorized(response: Response, context: AuthContextType) : Promise<Response> {
        // If and only if the context is set (the app things we are logged in) and the response is 401 (we are not), handle the logout

@@ -24,8 +24,8 @@ export default function Selector(props: Props) {
     );
 
     const renderDropdown = () => (
-        <div key = {`selector-div-${instanceTag}`}>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+        <Box key = {`selector-div-${instanceTag}`} sx = {{width:"100%"}}>
+            <FormControl variant="standard" sx={{ mr: 1,my:1, minWidth: 12, width:"100%" }}>
                 <InputLabel id={`selector-label-${instanceTag}`}>{label}</InputLabel>
                 <Select
                     labelId={`selector-label-${instanceTag}`}
@@ -46,7 +46,7 @@ export default function Selector(props: Props) {
                     ))}
                 </Select>
             </FormControl>
-        </div>
+        </Box>
     );
 
     const renderRadio = () => (

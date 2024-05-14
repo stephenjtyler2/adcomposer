@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ApiUser } from '@backend/apitypes';
 import Cookies from 'js-cookie';
-import { authenticateWithUserIdAndCookie } from './apiClient/auth';
+import { authenticateWithUserIdAndCookie } from '../apiClient/auth';
 import { AuthContext, AuthContextType } from './AuthContext';
 
 // This component maintains the state for which user is logged in.   This, as well as functions to update that state are provided though a context object.

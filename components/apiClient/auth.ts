@@ -1,4 +1,6 @@
 import { ApiUser } from "@backend/apitypes";
+import { AuthContextType } from "../contexts/AuthContext";
+import { handleUnauthorized } from "./utils/network";
 
 // Used at app startup to check if we have valid auth cookie for the userId recorded
 // in localstorage as the logged in user.
@@ -50,4 +52,10 @@ export async function authenticateWithCreds(username: string, password: string) 
             return null;
         }
     })
+}
+
+export async function keepAlive(authContext:AuthContextType) {
+    console.log("calling keepalive");
+    return fetch('/api/auth/keepalive')
+    .then(response=>handleUnauthorized(response, authContext));
 }

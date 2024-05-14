@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -102,7 +103,7 @@ enum ImageOrigin {
 }
 
 enum ImageType {
-  Backgrounds
+  Background
   Object
 }
 enum ImageCreationStatus {
@@ -115,7 +116,7 @@ enum ImageCreationStatus {
 // We only keep generated images for 2 days unless they have been added to a library.
 model Image {
   id                   Int         @id @default(autoincrement())
-  imageType            ImageType   @default(value: Backgrounds)
+  imageType            ImageType   @default(value: Background)
   imageOrigin          ImageOrigin
   prompt               String?
   createDate           DateTime?
@@ -143,8 +144,8 @@ model Tag {
 // =================
 
 enum AdType {
-  StaticImage
-  DynamicWeb
+  Static
+  Dynamic
   Social
 }
 

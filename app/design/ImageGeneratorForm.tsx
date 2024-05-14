@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Box, SelectChangeEvent, Button } from '@mui/material';
+import { Typography, Box, SelectChangeEvent, Button, Stack } from '@mui/material';
 import Selector from '@/components/controlledFormFields/Selector';
 import TextInputBox from '@/components/controlledFormFields/TextInputBox';
 import { targetMarkets } from '@/config/targetMarkets';
@@ -35,10 +35,11 @@ const targetMarketOptions = targetMarkets.map((market) => ({
 
 type Props = {
   onGenerate: (prompt: string, imageAspectRatio: ImageAspectRatio) => void,
-  generateButtonDisabled: boolean
+  generateButtonDisabled: boolean,
+  showTitle: boolean,
 }
 
-export default function ImageGeneratorForm({ onGenerate, generateButtonDisabled }: Props) {
+export default function ImageGeneratorForm({ onGenerate, generateButtonDisabled, showTitle }: Props) {
   const [subjectText, setSubjectText] = useState("");
   const [additionalInfoText, setAdditionalInfoText] = useState("");
   const [imgStyle, setImgStyle] = useState(imgStyleOptions[0]);
@@ -55,23 +56,25 @@ export default function ImageGeneratorForm({ onGenerate, generateButtonDisabled 
 
 
   return (<>
-    <Typography variant='h6'><b>Generate Image</b></Typography>
-    <Selector
-      type="dropdown"
-      value={targetMarket.optionValue}
-      label="Target Market"
-      instanceTag="targetMarket"
-      options={targetMarketOptions}
-      onSelectionChange={(event: SelectChangeEvent) => setTargetMarket(targetMarketOptions.find(option => option.optionValue == event.target.value) || targetMarketOptions[0])}
-    />
-    <Selector
-      type="dropdown"
-      value={imgStyle.optionValue}
-      label="Image Style"
-      instanceTag="imgStyle"
-      options={imgStyleOptions}
-      onSelectionChange={(event: SelectChangeEvent) => setImgStyle(imgStyleOptions.find(option => option.optionValue == event.target.value) || imgStyleOptions[0])}
-    />
+    {showTitle && <Typography variant='h6'><b>Generate Image</b></Typography>}
+    <Stack direction="row" spacing={2} sx = {{width: "100%"}}>
+      <Selector
+        type="dropdown"
+        value={targetMarket.optionValue}
+        label="Target Market"
+        instanceTag="targetMarket"
+        options={targetMarketOptions}
+        onSelectionChange={(event: SelectChangeEvent) => setTargetMarket(targetMarketOptions.find(option => option.optionValue == event.target.value) || targetMarketOptions[0])}
+      />
+      <Selector
+        type="dropdown"
+        value={imgStyle.optionValue}
+        label="Image Style"
+        instanceTag="imgStyle"
+        options={imgStyleOptions}
+        onSelectionChange={(event: SelectChangeEvent) => setImgStyle(imgStyleOptions.find(option => option.optionValue == event.target.value) || imgStyleOptions[0])}
+      />
+    </Stack>
     {showImageAspectRatio &&
       <Selector
         type="dropdown"

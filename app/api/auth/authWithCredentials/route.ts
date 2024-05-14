@@ -28,8 +28,8 @@ export async function POST(req: Request) {
     // console.log(user);
 
     if (user) {
-        const accessToken:string = makeJWTAccessToken(user);
-        const refreshToken:string = makeJWTRefreshToken(user);
+        const accessToken:string = makeJWTAccessToken(tenant.id, user);
+        const refreshToken:string = makeJWTRefreshToken(tenant.id, user);
         
         cookies().set({
             name: 'accessToken',

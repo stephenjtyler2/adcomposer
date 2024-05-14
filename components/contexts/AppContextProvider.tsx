@@ -2,7 +2,7 @@
 
 'use client'
 import { useState, useEffect} from 'react';
-import { getTenant } from './apiClient/tenant';
+import { getTenant } from '../apiClient/tenant';
 import { AppContext, AppContextType } from './AppContext';
 
 

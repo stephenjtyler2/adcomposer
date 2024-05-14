@@ -2,9 +2,9 @@
 import React, { useEffect, useState , useContext} from 'react';
 
 import { Typography, Box, Stack, TextField, Button, Container } from '@mui/material';
-import { AppContext} from '@/components/AppContext';
+import { AppContext} from '@/components/contexts/AppContext';
 import { authenticateWithCreds } from '@/components/apiClient/auth';
-import { AuthContext } from '@/components/AuthContext';
+import { AuthContext } from '@/components/contexts/AuthContext';
 import { redirect } from 'next/navigation';
 
 const title = "Ad Composer"

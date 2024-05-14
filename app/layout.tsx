@@ -12,9 +12,9 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import theme from '@/config/theme';
 import type { AppProps } from "next/app";
 import createEmotionCache from '@/config/createEmotionCache';
-import AuthContextProvider from "@/components/AuthContextProvider";
+import AuthContextProvider from "@/components/contexts/AuthContextProvider";
 
-const AppContextProvider = dynamic(() => import('../components/AppContextProvider'), {
+const AppContextProvider = dynamic(() => import('../components/contexts/AppContextProvider'), {
   ssr: false, // dynamic import forces the render to ONLY happen client side
 })
 

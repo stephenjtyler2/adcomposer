@@ -1,20 +1,21 @@
 'use client'
 
 import React, { useContext, useState } from 'react';
-import { PageContainer } from '@/components/PageContainer';
+import { PageContainer } from '@/components/scaffold/PageContainer';
 import ImageViewer from './ImageViewer';
 import { Box, Divider, Stack } from '@mui/material';
-import ImageGeneratorForm from './ImageGeneratorForm';
+import ImageGeneratorForm from '../ImageGeneratorForm';
 import { generateImage as ApiGenerateImage } from '@/components/apiClient/image';
-import { ImageAspectRatio, ApiImage } from '@backend/apitypes';
+import { ImageAspectRatio, ApiImage, ApiLibrarySearchResults } from '@backend/apitypes';
 import LibrarySearch from '@/components/controlledFormFields/LibrarySearch';
 import Recents from './Recents';
 import FileUploader from '@/components/FileUploader';
 
 import { deleteImage } from '@/components/apiClient/image';
 import { addImageToLibrary } from '@/components/apiClient/image';
-import ImageSearchResults from '@/components/ImageSearchResults';
-import { AuthContext } from '@/components/AuthContext';
+import ImageSearchResults from '@/components/LibrarySearchResults';
+import { AuthContext } from '@/components/contexts/AuthContext';
+import LibrarySearchResults from '@/components/LibrarySearchResults';
 
 const rightWidth = 400;
 const noImageText = 'Search the library, upload or generate a new background.'
@@ -25,7 +26,7 @@ export default function Page() {
 
   const [imageGenerationPending, setImageGenerationPending] = useState(false);
   const [imageInfo, setImageInfo] = useState<ApiImage | undefined>(undefined);
-  const [searchResults, setSearchResults] = useState<ApiImage[]>([]);
+  const [searchResults, setSearchResults] = useState<ApiLibrarySearchResults>({images: [], ads: []});
   const [mainView, setMainView] = useState<MainViewContents>("Image");
 
   const authContext = useContext(AuthContext);
@@ -63,8 +64,8 @@ export default function Page() {
     }
   }
 
-  const handleSearchResults=(images: ApiImage[]) => {
-    setSearchResults(images);
+  const handleSearchResults=(results: ApiLibrarySearchResults) => {
+    setSearchResults(results);
     setMainView("SearchResults");
   }
 
@@ -94,8 +95,7 @@ export default function Page() {
 
   function renderSideBar() {
     return (
-      <Stack sx={{ height: "100%", borderLeft:2, borderColor: "motionPoint.borders", px:1 }}>
-        
+      <Stack sx={{ height: "100%", borderLeft:0, borderColor: "motionPoint.borders", px:1 }}>  
         <Box sx={{ p:2, alignSelf: "end" }}>
           <FileUploader onUploadSuccess={handleFileUploaded} />
         </Box>
@@ -116,9 +116,9 @@ export default function Page() {
     return (
       <Stack direction="column" sx={{ height: "100%", }}>
         <Box sx={{mb:1}}>
-          <LibrarySearch imageTypeFilter='Backgrounds' onSearchResults = {handleSearchResults}/>
+          <LibrarySearch assetTypeFilters={['Background']} onSearchResults = {handleSearchResults}/>
         </Box>
-        <Box sx={{ border:2, borderColor: "motionPoint.borders", p: 1, flexGrow: 1 }}>
+        <Box sx={{ border:2, borderRadius: 2, borderColor: "motionPoint.borders", p: 1, flexGrow: 1 }}>
           {mainView=="Image" && 
           <ImageViewer
             imageInfo={imageInfo}
@@ -127,7 +127,7 @@ export default function Page() {
             onSaveToLibrary={handleSaveImageToLibrary}
             onRemoveFromLibrary={handleDeleteImage} />
           }
-          {mainView =="SearchResults" && <ImageSearchResults images = {searchResults} />}
+          {mainView =="SearchResults" && <LibrarySearchResults results = {searchResults} />}
         </Box>
       </Stack>
     );
@@ -136,7 +136,7 @@ export default function Page() {
   return (
     <PageContainer title="Backgrounds">
       <Stack direction="row" sx={{ width: "100%", height: '100%' }}>
-        <Box id="box-left" sx={{ flexGrow: 1, mx: 1, mb: 0 }}>
+        <Box id="box-left" sx={{ flexGrow: 1, p:1, mx: 1, mb: 1, border:1, borderRadius:2, borderColor: "motionPoint.borders", backgroundColor:"motionPoint.mainPanelBackground" }}>
           {renderMainPanel()}
         </Box>
         <Box id="box-right" sx={{ minWidth: rightWidth, ml: 1, mb: 0 }}>

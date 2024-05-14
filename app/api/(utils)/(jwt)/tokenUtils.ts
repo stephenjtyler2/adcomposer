@@ -19,7 +19,9 @@ const makeJwtToken = (payload: string | object | Buffer) => {
 export type ApiRouteAuthCheckResponse = {
     success: boolean,
     userId: number,
+    tenantId: number,
 }
+
 export const apiRouteAuthCheck = (req: Request): ApiRouteAuthCheckResponse => {
     const cookieStore = cookies();
     const accessToken = cookieStore.get("accessToken");
@@ -28,6 +30,7 @@ export const apiRouteAuthCheck = (req: Request): ApiRouteAuthCheckResponse => {
     const fail = {
         success: false,
         userId: -1,
+        tenantId: -1,
     };
 
     if (!accessToken) return fail;
@@ -37,12 +40,15 @@ export const apiRouteAuthCheck = (req: Request): ApiRouteAuthCheckResponse => {
     // console.log('after access token verify');
     // console.log(decoded);
     // @ts-ignore
-    if (decoded && decoded.user) {
+    if (decoded && decoded.user && decoded.tenantId) {
         // @ts-ignore
         const user = decoded.user as ApiUser;
+        // @ts-ignore
+        const tenantId :number = decoded.tenantId;
         return {
             success: true,
             userId: user.id ?? -1,
+            tenantId: tenantId ?? -1,
         }
     }
 
@@ -52,19 +58,24 @@ export const apiRouteAuthCheck = (req: Request): ApiRouteAuthCheckResponse => {
         // console.log('before refresh token verify');
         let decoded = verifyToken(refreshToken.value);
         // console.log('after refresh token verify');
-
+        console.log("refresh token is good")
         // @ts-ignore
-        if (decoded && decoded.user) {
+        if (decoded && decoded.user && decoded.tenantId) {
+            console.log("refresh token is good, issuing new tokens");
             // @ts-ignore
             const user = decoded.user as ApiUser;
-            const newAccessToken = makeJWTAccessToken(user);
-            const newRefreshToken = makeJWTRefreshToken(user);
+            // @ts-ignore
+            const tenantId :number = decoded.tenantId;
+
+            const newAccessToken = makeJWTAccessToken(tenantId, user);
+            const newRefreshToken = makeJWTRefreshToken(tenantId, user);
             cookies().set("accessToken", newAccessToken);
             cookies().set("refreshToken", newRefreshToken);
 
             return {
                 success: true,
-                userId: user.id ?? -1
+                userId: user.id??-1,
+                tenantId: tenantId??-1
             }
         }
         else return fail;
@@ -104,24 +115,27 @@ export const verifyToken = (token: string) => {
     }
 }
 
-export const makeJWTAccessToken = (user: ApiUser) => {
+export const makeJWTAccessToken = (tenantId: number, user: ApiUser) => {
     const accessTokenTTLMs = 1000 * parseInt(process.env.JWT_ACCESS_TTL_SECONDS ?? defaultAccessTokenTTLSecs);
 
     const payload = {
         user: user,
+        tenantId: tenantId,
         exp: Math.floor((Date.now() + accessTokenTTLMs) / 1000)
     }
 
     return makeJwtToken(payload);
 }
 
-export const makeJWTRefreshToken = (user: ApiUser) => {
+export const makeJWTRefreshToken = (tenantId:number, user: ApiUser) => {
     const refreshTokenTTLMs = 1000 * parseInt(process.env.JWT_REFRESH_TTL_SECONDS ?? defaultRefreshTokenTTLSecs);
 
     const payload = {
         user: user,
+        tenantId: tenantId,
         exp: Math.floor((Date.now() + refreshTokenTTLMs) / 1000)
     }
+
 
     return makeJwtToken(payload);
 }

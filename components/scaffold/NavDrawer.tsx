@@ -30,7 +30,7 @@ function NavDrawer() {
             {
                 sectionTitle: "Ads",
                 elements: [
-                    { label: 'Static Images', path: '/design/static', icon: <CropOriginalIcon /> },
+                    { label: 'Static Ads', path: '/design/static', icon: <CropOriginalIcon /> },
                     { label: 'Dynamic Web Ads', path: '/design/dynamic', icon: <AnimationIcon /> },
                     { label: 'Social Posts', path: '/design/social', icon: <ConnectWithoutContactIcon /> },
                 ]
@@ -82,16 +82,16 @@ function NavDrawer() {
     );
 
     const renderNavMenu = () => (
-        <Box sx={{ flexGrow:1, borderRight: 2, borderBottom: 2, p:0, m:0, borderColor: 'motionPoint.borders' }}>
+        <Box sx={{ flexGrow:1, borderRight: 2, borderBottom: 2, p:0, m:0, bgColor: "motionPoint.appBackground", borderColor: 'motionPoint.borders' }}>
             <Box sx={{ overflow: 'auto' }}>
                 <Box key="menuItems"
                     sx={(theme) => ({
-                        bgcolor: '#ffffff'
+                        bgcolor: "motionPoint.appBackground"
                     })}
                 >
                     {menuStructure.map((section, sectionIx) => (
                         <React.Fragment key={`section-${sectionIx}`}>
-                            {(sectionIx > 0) && <Divider />}
+                            {(sectionIx > 0) && <Divider/>}
                             <List
                                 sx={{ width: '100%', maxWidth: 240 }}
                                 component="nav"
@@ -100,7 +100,7 @@ function NavDrawer() {
                                     <ListSubheader
                                         id={`list-subheader-${sectionIx}`}
                                         component="div"
-                                        sx={(theme) => ({ color: theme.palette.text.primary })}
+                                        sx={(theme) => ({ fontWeight: "bold", color: theme.palette.text.primary, bgcolor: "motionPoint.appBackground" })}
                                     >
                                         {section.sectionTitle}
                                     </ListSubheader>
@@ -108,13 +108,14 @@ function NavDrawer() {
 
                                 {section.elements.map((item, itemIndex) => (
                                     <ListItem disablePadding
-                                        key={`item-${sectionIx}-${itemIndex}}`}
+                                        key={`item-${sectionIx}-${itemIndex}}`
+                                    }
                                     >
-                                        <ListItemButton>
+                                        <ListItemButton onClick={() => router.push(item.path)} sx = {{bgcolor: "motionPoint.appBackground"}}>
                                             <ListItemIcon>
                                                 {item.icon}
                                             </ListItemIcon>
-                                            <ListItemText primary={item.label} onClick={() => router.push(item.path)} />
+                                            <ListItemText primary={item.label}  />
                                         </ListItemButton>
                                     </ListItem>
                                 ))}
@@ -129,7 +130,7 @@ function NavDrawer() {
     );
 
     return (
-        <Box sx={{ border:0, display: "flex", flexDirection: "column", width:drawerWidth }}>
+        <Box sx={{ bgcolor:"motionPoint.appBackground", border:0, display: "flex", flexDirection: "column", width:drawerWidth }}>
             {renderAppTitleBar()}
             {renderNavMenu()}
         </Box>

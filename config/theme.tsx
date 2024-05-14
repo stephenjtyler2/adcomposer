@@ -1,7 +1,9 @@
 import { createTheme } from '@mui/material/styles';
 import { red,amber,green, blue } from '@mui/material/colors';
 
-
+const white = '#fff';
+const motionPointBlue = '#0150c9';
+const motionPointBlueLight = '#668bc4'
 // Create a theme instance.
 const theme = createTheme({
   palette: {
@@ -10,13 +12,13 @@ const theme = createTheme({
     mode:'light',
     // background colors (app bar, buttons)
     background: {
-      paper: '#fdfdfd',
+      paper: '#ffffff',
     },
     primary: {
-      main: '#0150c9',  // motionpoint blue
+      main: motionPointBlue,  
     },
     secondary: {
-      main: '#0150c9',
+      main: motionPointBlueLight,
     },
     info: {
       main: blue.A400,
@@ -32,10 +34,12 @@ const theme = createTheme({
     },
 
     motionPoint: {
-      main: '#0150c9',    // Motionpoint Blue - use for accented backgrounds e.g. avatars, appbars, buttons
-      borders: '#e7e7e7',       // light grey for use as a soft outline / border color
+      main: motionPointBlue,    // Motionpoint Blue - use for accented backgrounds e.g. avatars, appbars, buttons
+      borders: '#aaa',       // light grey for use as a soft outline / border color
       searchBar: '#e7e7e7',
-      contrastText: '#fff',
+      contrastText: white,
+      appBackground: '#fbfdff',
+      mainPanelBackground: white,
     },
 
 

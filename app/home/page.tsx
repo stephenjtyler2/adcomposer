@@ -1,11 +1,10 @@
 'use client'
 
 import React from 'react';
-import { PageContainer} from '@/components/PageContainer';
+import { PageContainer} from '@/components/scaffold/PageContainer';
 
 export default function Page() {
   return (
-    <PageContainer title ="Dashboard">
-    </PageContainer>
+    <PageContainer title ="Dashboard"/>
   );
 }
