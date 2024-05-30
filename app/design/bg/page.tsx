@@ -101,7 +101,7 @@ export default function Page() {
         </Box>
         <Divider />
         <Box sx={{ border: 0, borderColor: "motionPoint.borders", p:1, my:2 }}>
-          <ImageGeneratorForm onGenerate={generateImage} generateButtonDisabled={imageGenerationPending} />
+          <ImageGeneratorForm showTitle={true} onGenerate={generateImage} generateButtonDisabled={imageGenerationPending} />
         </Box>
         <Divider />
         <Box sx={{ flexGrow:1, border: 0, borderColor: "motionPoint.borders", p:1 }}>

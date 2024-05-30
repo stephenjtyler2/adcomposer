@@ -1,7 +1,6 @@
 import {
     S3Client,
     PutObjectCommand,
-    S3ServiceException,
     DeleteObjectCommand
   } from "@aws-sdk/client-s3";
 

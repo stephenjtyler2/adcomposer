@@ -1,7 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import { ApiImage } from '../../apitypes';
-import { APIPromise } from 'openai/core.mjs';
-
 
 const prisma = new PrismaClient();
 

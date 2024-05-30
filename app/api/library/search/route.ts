@@ -1,5 +1,4 @@
 import { apiRouteAuthCheck } from "@backend/(utils)/(jwt)/tokenUtils";
-import { ApiLibrarySearchResults } from "@backend/apitypes";
 import { librarySearch } from "./data";
 
 export async function POST(req: Request) {
